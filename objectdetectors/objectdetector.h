@@ -11,7 +11,10 @@ using namespace cv;
 
 class ObjectDetector {
 public:
-    ObjectDetector(string window) { windowName_ = window; }
+    ObjectDetector(string window) {
+        windowName_ = window;
+        namedWindow( window, WINDOW_AUTOSIZE );
+    }
     virtual vector<Rect> detect(Mat& frame) = 0;
 
     virtual void show() {

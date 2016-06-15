@@ -5,15 +5,15 @@
 #include <string>
 
 #include "settings.h"
-#include "objectdetectors/haarfacedetector.h"
+#include "objectdetectors/cascadefacedetector.h"
 
-HaarFaceDetector::HaarFaceDetector(string window): ObjectDetector(window) {
-    if( !classifier_.load(HAARFACEDETECTOR_XML) ) {
+CascadeFaceDetector::CascadeFaceDetector(string window): ObjectDetector(window) {
+    if( !classifier_.load(MODEL_CASCADE) ) {
         // TODO: DO SOMETHING
     };
 }
 
-vector<Rect> HaarFaceDetector::detect(Mat &frame) {
+vector<Rect> CascadeFaceDetector::detect(Mat &frame) {
     Mat frame_gray;
 
     frame_ = frame;

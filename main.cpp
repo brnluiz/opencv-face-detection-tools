@@ -4,9 +4,10 @@
  * @brief A simplified version of facedetect.cpp, show how to load a cascade classifier and how to find objects (Face + eyes) in a video stream - Using LBP here
  */
 
-#include "sourcehandlers/imagehandler.h"
-#include "objectdetectors/haarfacedetector.h"
+#include "sourcehandlerfactory.h"
+#include "objectdetectors/cascadefacedetector.h"
 #include "settings.h"
+#include <iostream>
 
 using namespace std;
 using namespace cv;
@@ -17,23 +18,36 @@ using namespace cv;
 
 int main( void )
 {
-    HaarFaceDetector faceDetector(WINDOW_NAME);
+    CascadeFaceDetector detector(WINDOW_NAME);
+    SourceHandlerFactory factory;
 
-    ImageHandler handler;
-    handler.open("/home/brunoluiz/qt/DetectorsSandbox/faces/005.jpg");
+    SourceHandler *handler = factory.make("cam", "default");
+//    SourceHandler *handler = factory.make("image", "/home/brunoluiz/qt/DetectorsSandbox/faces/005.jpg");
 
-    while(!handler.isFinished()) {
+    cout << "Press ESC to stop processing" << endl;
+    while(!handler->isFinished()) {
         // Get the actual frame
-        Mat frame = handler.get();
+        Mat frame = handler->get();
 
         // Detect the face
-        faceDetector.detect(frame);
+        detector.detect(frame);
 
         // Show the face for the user
-        faceDetector.show();
+        detector.show();
+
+        // Stop if ESC is pressed
+        if (waitKey(1) == 27) {
+            cout << "Stop processing" << endl;
+            break;
+        }
     }
 
-    waitKey(0);
+    cout << "Press any key to exit" << endl;
+    if (waitKey(0)) {
+        cout << "Good bye!" << endl;
+    }
+
+    delete handler;
 
     return 0;
 }

@@ -10,9 +10,9 @@
 using namespace std;
 using namespace cv;
 
-class HaarFaceDetector: public ObjectDetector{
+class CascadeFaceDetector: public ObjectDetector{
 public:
-    HaarFaceDetector(string window);
+    CascadeFaceDetector(string window);
 
     vector<Rect> detect(Mat& frame);
 

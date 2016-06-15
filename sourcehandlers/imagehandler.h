@@ -12,6 +12,7 @@ using namespace cv;
 class ImageHandler: public SourceHandler {
 public:
     ImageHandler();
+    ImageHandler(string source);
 
     void open(string source);
     Mat get();
