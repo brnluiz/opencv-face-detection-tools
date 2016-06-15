@@ -14,6 +14,7 @@ class CamHandler: public SourceHandler {
 public:
     CamHandler();
     CamHandler(string source);
+    ~CamHandler();
 
     void open(string source = "default");
 

@@ -10,8 +10,9 @@ using namespace cv;
 class SourceHandler {
 public:
     SourceHandler(): finished_(0) {;}
-    SourceHandler(string source): finished_(0) {
+    SourceHandler(string source): finished_(0), source_(source) {
     }
+    ~SourceHandler() {}
 
     virtual void open(string source) = 0;
     virtual Mat get() = 0;
@@ -19,6 +20,7 @@ public:
     bool isFinished() { return finished_; }
 protected:
     bool finished_;
+    string source_;
 };
 
 #endif // SOURCEHANDLER_H

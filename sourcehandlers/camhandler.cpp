@@ -6,6 +6,8 @@ CamHandler::CamHandler(string source): SourceHandler(source) {
     open(source);
 }
 
+CamHandler::~CamHandler() {}
+
 void CamHandler::open(string source) {
     int id = 0;
 

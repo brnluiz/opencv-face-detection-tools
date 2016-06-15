@@ -14,6 +14,8 @@ ImageHandler::ImageHandler(string source): SourceHandler(source) {
     open(source);
 }
 
+ImageHandler::~ImageHandler() {}
+
 void ImageHandler::open(string source) {
     file_ = imread(source, CV_LOAD_IMAGE_COLOR);
 }
