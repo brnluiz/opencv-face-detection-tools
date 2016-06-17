@@ -27,4 +27,5 @@ HEADERS += \
     objectdetectors/objectdetector.h \
     sourcehandlerfactory.h \
     objectdetectors/hogsvmdetector.h \
-    objectdetectors/cascadedetector.h
+    objectdetectors/cascadedetector.h \
+    objectdetectorfactory.h
