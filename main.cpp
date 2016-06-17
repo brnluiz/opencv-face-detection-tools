@@ -21,13 +21,12 @@ void checkParameters(float *params, int size) {
     }
 }
 
-int main( int argc, char** argv )
-{
+int main( int argc, char** argv ) {
     // Parse the arguments
     cv::CommandLineParser parser(argc, argv,
                                  "{help h|| show help message}"
-                                 "{model||model file (path+file)}{type||detector type (cascade, hogsvm)}{src||source mode (cam, image, video)}"
-                                 "{hogblock||hog block size}{hogstride||hog block stride}{hogcell||hog cell size}{hogwh||hog window height}{hogww||hog window width}"
+                                 "{model||model file (path+file)}{type||detector type (cascade, hogsvm)}{src||source file/mode (cam, path+image.jpg, path+video.mpeg)}"
+                                 "{hogblock||hog block size}{hogstride||hog block stride}{hogcell||hog cell size}{hogwh||hog sliding window height}{hogww||hog sliding window width}"
                                  );
     string model = parser.get<string>("model");
     string type = parser.get<string>("type");
@@ -73,7 +72,10 @@ int main( int argc, char** argv )
 
     if (src == "cam") {
         source = sourceFactory.make("cam", "default");
-    } else if (src.find("jpg") != std::string::npos) {
+    } else if ( (src.find("jpg") != std::string::npos)
+                || (src.find("jpeg") != std::string::npos)
+                || (src.find("JPG") != std::string::npos)
+                || (src.find("JPEG") != std::string::npos) ) {
         source = sourceFactory.make("image", src);
     } else {
         cerr << "Source handler not available" << endl;
