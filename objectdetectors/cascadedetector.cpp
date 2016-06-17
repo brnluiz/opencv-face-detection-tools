@@ -5,15 +5,15 @@
 #include <string>
 
 #include "settings.h"
-#include "objectdetectors/cascadefacedetector.h"
+#include "objectdetectors/cascadedetector.h"
 
-CascadeFaceDetector::CascadeFaceDetector(string window): ObjectDetector(window) {
+CascadeDetector::CascadeDetector(string window): ObjectDetector(window) {
     if( !classifier_.load(MODEL_CASCADE) ) {
         // TODO: DO SOMETHING
     };
 }
 
-vector<Rect> CascadeFaceDetector::detect(Mat &frame) {
+vector<Rect> CascadeDetector::detect(Mat &frame) {
     Mat frame_gray;
 
     frame_ = frame;

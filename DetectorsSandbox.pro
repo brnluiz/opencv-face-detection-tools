@@ -12,7 +12,8 @@ TEMPLATE = app
 SOURCES += main.cpp \
     sourcehandlers/imagehandler.cpp \
     sourcehandlers/camhandler.cpp \
-    objectdetectors/haarfacedetector.cpp
+    objectdetectors/cascadedetector.cpp \
+    objectdetectors/hogsvmdetector.cpp
 
 INCLUDEPATH += /usr/local/include/opencv
 
@@ -25,4 +26,5 @@ HEADERS += \
     sourcehandlers/camhandler.h \
     objectdetectors/objectdetector.h \
     sourcehandlerfactory.h \
-    objectdetectors/cascadefacedetector.h
+    objectdetectors/hogsvmdetector.h \
+    objectdetectors/cascadedetector.h

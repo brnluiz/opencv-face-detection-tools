@@ -1,5 +1,5 @@
-#ifndef HAARFACEDETECTOR_H
-#define HAARFACEDETECTOR_H
+#ifndef CASCADEDETECTOR_H
+#define CASCADEDETECTOR_H
 
 #include <opencv2/core/core.hpp>
 #include <vector>
@@ -10,9 +10,9 @@
 using namespace std;
 using namespace cv;
 
-class CascadeFaceDetector: public ObjectDetector{
+class CascadeDetector: public ObjectDetector{
 public:
-    CascadeFaceDetector(string window);
+    CascadeDetector(string window);
 
     vector<Rect> detect(Mat& frame);
 
@@ -20,4 +20,4 @@ private:
     CascadeClassifier classifier_;
 };
 
-#endif // HAARFACEDETECTOR_H
+#endif // CASCADEDETECTOR_H

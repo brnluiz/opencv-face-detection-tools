@@ -5,7 +5,8 @@
  */
 
 #include "sourcehandlerfactory.h"
-#include "objectdetectors/cascadefacedetector.h"
+#include "objectdetectors/cascadedetector.h"
+#include "objectdetectors/hogsvmdetector.h"
 #include "settings.h"
 #include <iostream>
 
@@ -18,11 +19,12 @@ using namespace cv;
 
 int main( void )
 {
-    CascadeFaceDetector detector(WINDOW_NAME);
-    SourceHandlerFactory factory;
+//    CascadeDetector detector(WINDOW_NAME);
+    HogSvmDetector detector(WINDOW_NAME);
 
+    SourceHandlerFactory factory;
     SourceHandler *handler = factory.make("cam", "default");
-//    SourceHandler *handler = factory.make("image", "/home/brunoluiz/qt/DetectorsSandbox/faces/005.jpg");
+//    SourceHandler *handler = factory.make("image", "/home/brunoluiz/Downloads/proj5/data/test_scenes/test_jpg/natalie1.jpg");
 
     cout << "Press ESC to stop processing" << endl;
     while(!handler->isFinished()) {
@@ -42,8 +44,8 @@ int main( void )
         }
     }
 
-    cout << "Press any key to exit" << endl;
-    if (waitKey(0)) {
+    cout << "Press ESC to exit" << endl;
+    if (waitKey(0) == 27) {
         cout << "Good bye!" << endl;
     }
 
