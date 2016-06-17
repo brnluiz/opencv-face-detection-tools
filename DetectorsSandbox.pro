@@ -14,7 +14,7 @@ SOURCES += main.cpp \
     sourcehandlers/camhandler.cpp \
     objectdetectors/cascadedetector.cpp \
     objectdetectors/hogsvmdetector.cpp \
-    objectdetector.cpp
+    objectdetectors/objectdetector.cpp \
 
 INCLUDEPATH += /usr/local/include/opencv
 
@@ -22,11 +22,11 @@ LIBS += -L/usr/local/lib -lopencv_shape -lopencv_stitching -lopencv_objdetect -l
 
 HEADERS += \
     settings.h \
+    sourcehandlerfactory.h \
+    objectdetectorfactory.h \
     sourcehandlers/sourcehandler.h \
     sourcehandlers/imagehandler.h \
     sourcehandlers/camhandler.h \
     objectdetectors/objectdetector.h \
-    sourcehandlerfactory.h \
     objectdetectors/hogsvmdetector.h \
     objectdetectors/cascadedetector.h \
-    objectdetectorfactory.h
