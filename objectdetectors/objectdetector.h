@@ -11,21 +11,22 @@ using namespace cv;
 
 class ObjectDetector {
 public:
-    ObjectDetector(string window) {
-        windowName_ = window;
-        namedWindow( window, WINDOW_AUTOSIZE );
-    }
-    virtual vector<Rect> detect(Mat& frame) = 0;
+    ObjectDetector(string window);
+    ObjectDetector(string window, string model, float *params);
 
-    virtual void show() {
-        for (size_t i = 0; i < objects_.size(); i++) {
-            rectangle(frame_, objects_[i], Scalar(0, 255, 0), 3);
-        }
-        imshow(windowName_, frame_);
-    }
+    void setModel(string model);
+    void setWindow(string window);
+    virtual void show();
+
+    virtual vector<Rect> detect(Mat& frame) = 0;
+    virtual void reset() = 0;
 
 protected:
+    virtual void setParams(float *params) = 0;
+
     string windowName_;
+    string model_;
+
     Mat frame_;
     std::vector<Rect> objects_;
 };

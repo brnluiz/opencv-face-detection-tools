@@ -13,11 +13,29 @@ using namespace cv::ml;
 using namespace std;
 
 HogSvmDetector::HogSvmDetector(string window): ObjectDetector(window) {
-    // HOG settings used for the trained model
-    hog_.winSize = Size(MODEL_HOGSVM_WINSIZE_W, MODEL_HOGSVM_WINSIZE_H);
+}
 
+HogSvmDetector::HogSvmDetector(string window, string model, float *params): ObjectDetector(window, model, params) {
+    setParams(params);
+    reset();
+}
+
+void HogSvmDetector::setParams(float *params) {
+    int width = (int)params[0];
+    int height = (int)params[1];
+    int blockSize = (int)params[2];
+    int blockStride = (int)params[3];
+    int cellSize = (int)params[4];
+
+    hog_.winSize = Size(width, height);
+    hog_.blockSize = Size(blockSize, blockSize);
+    hog_.blockStride = Size(blockStride, blockStride);
+    hog_.cellSize = Size(cellSize, cellSize);
+}
+
+void HogSvmDetector::reset() {
     // Load the trained model
-    svm_ = StatModel::load<SVM>(MODEL_HOGSVM);
+    svm_ = StatModel::load<SVM>(model_);
 
     // Set the trained svm to hog_
     vector<float> detector = getDetector();

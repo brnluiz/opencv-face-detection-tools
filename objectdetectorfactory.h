@@ -11,7 +11,13 @@ using namespace std;
 
 class ObjectDetectorFactory {
 public:
-    ObjectDetector* make(string name, string model) {
+    ObjectDetector* make(string type, string model, float *params) {
+        if (type == "hogsvm") {
+            return new HogSvmDetector("Window", model, params);
+        }
+        else if (type == "cascade") {
+            return new CascadeDetector("Window", model, params);
+        }
     }
 };
 

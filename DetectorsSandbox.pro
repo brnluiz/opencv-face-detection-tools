@@ -13,7 +13,8 @@ SOURCES += main.cpp \
     sourcehandlers/imagehandler.cpp \
     sourcehandlers/camhandler.cpp \
     objectdetectors/cascadedetector.cpp \
-    objectdetectors/hogsvmdetector.cpp
+    objectdetectors/hogsvmdetector.cpp \
+    objectdetector.cpp
 
 INCLUDEPATH += /usr/local/include/opencv
 

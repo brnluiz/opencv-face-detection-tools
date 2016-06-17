@@ -8,7 +8,15 @@
 #include "objectdetectors/cascadedetector.h"
 
 CascadeDetector::CascadeDetector(string window): ObjectDetector(window) {
-    if( !classifier_.load(MODEL_CASCADE) ) {
+    reset();
+}
+
+CascadeDetector::CascadeDetector(string window, string model, float *params): ObjectDetector(window, model, params) {
+    reset();
+}
+
+void CascadeDetector::reset() {
+    if( !classifier_.load(model_) ) {
         // TODO: DO SOMETHING
     };
 }
