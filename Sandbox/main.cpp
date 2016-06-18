@@ -19,8 +19,13 @@ int main( int argc, char** argv ) {
     // Parse the arguments
     cv::CommandLineParser parser(argc, argv,
                                  "{help h|| show help message}"
-                                 "{model||model file (path+file)}{type||detector type (cascade, hogsvm)}{src||source file/mode (cam, path+image.jpg, path+video.mpeg)}"
-                                 "{hogblock||hog block size}{hogstride||hog block stride}{hogcell||hog cell size}{hogwh||hog sliding window height}{hogww||hog sliding window width}"
+                                 "{model||model file (path+file)}"
+                                 "{type||detector type (cascade, hogsvm)}"
+                                 "{src||source file/mode (cam, path+image.jpg, path+video.mpeg)}"
+                                 "{hogblock||hog block size}{hogstride||hog block stride}"
+                                 "{hogcell||hog cell size}"
+                                 "{hogwh||hog sliding window height}"
+                                 "{hogww||hog sliding window width}"
                                  );
     string model = parser.get<string>("model");
     string type = parser.get<string>("type");

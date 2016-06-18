@@ -1,13 +1,11 @@
-QT += core
-QT -= gui
-
-CONFIG += c++11
-
-TARGET = faces_sandbox
-CONFIG += console
-CONFIG -= app_bundle
-
 TEMPLATE = app
+CONFIG += console c++11
+CONFIG -= app_bundle
+CONFIG -= qt
+
+SOURCES += main.cpp
+
+TARGET = faces_modeltester
 
 INCLUDEPATH += /usr/local/include/opencv
 INCLUDEPATH += $$PWD/../Lib
