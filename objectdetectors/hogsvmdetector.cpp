@@ -5,7 +5,6 @@
 #include <opencv2/opencv.hpp>
 #include <string>
 
-#include "settings.h"
 #include "objectdetectors/hogsvmdetector.h"
 
 using namespace cv;

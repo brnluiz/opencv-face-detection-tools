@@ -4,7 +4,6 @@
 #include <opencv2/imgproc.hpp>
 #include <string>
 
-#include "settings.h"
 #include "objectdetectors/cascadedetector.h"
 
 CascadeDetector::CascadeDetector(string window): ObjectDetector(window) {

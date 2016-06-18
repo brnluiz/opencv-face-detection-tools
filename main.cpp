@@ -1,13 +1,7 @@
-/**
- * @file objectDetection2.cpp
- * @author A. Huaman ( based in the classic facedetect.cpp in samples/c )
- * @brief A simplified version of facedetect.cpp, show how to load a cascade classifier and how to find objects (Face + eyes) in a video stream - Using LBP here
- */
-
-#include "sourcehandlerfactory.h"
-#include "objectdetectorfactory.h"
-#include "settings.h"
 #include <iostream>
+
+#include "factories/sourcehandlerfactory.h"
+#include "factories/objectdetectorfactory.h"
 
 using namespace std;
 using namespace cv;
