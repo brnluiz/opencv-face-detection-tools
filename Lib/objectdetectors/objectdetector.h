@@ -9,26 +9,29 @@
 using namespace std;
 using namespace cv;
 
+typedef FileStorage DetectorParams;
+typedef vector<Rect> Objects;
 class ObjectDetector {
 public:
     ObjectDetector(string window);
-    ObjectDetector(string window, string model, float *params);
+    ObjectDetector(DetectorParams params);
+    ObjectDetector(string window, DetectorParams params);
 
-    void setModel(string model);
-    void setWindow(string window);
     virtual void show();
-
-    virtual vector<Rect> detect(Mat& frame) = 0;
     virtual void reset() = 0;
+    virtual Objects detect(Mat& frame) = 0;
+    virtual void setParams(DetectorParams params) = 0;
 
+    void setWindow(string window);
+    Mat getFrame();
 protected:
-    virtual void setParams(float *params) = 0;
 
-    string windowName_;
+    string window_;
     string model_;
+    DetectorParams params_;
 
     Mat frame_;
-    std::vector<Rect> objects_;
+    Objects objects_;
 };
 
 #endif // OBJECTDETECTOR_H

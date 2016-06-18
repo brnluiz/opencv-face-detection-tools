@@ -14,22 +14,31 @@ using namespace std;
 HogSvmDetector::HogSvmDetector(string window): ObjectDetector(window) {
 }
 
-HogSvmDetector::HogSvmDetector(string window, string model, float *params): ObjectDetector(window, model, params) {
+HogSvmDetector::HogSvmDetector(DetectorParams params): ObjectDetector(params) {
     setParams(params);
     reset();
 }
 
-void HogSvmDetector::setParams(float *params) {
-    int width = (int)params[0];
-    int height = (int)params[1];
-    int blockSize = (int)params[2];
-    int blockStride = (int)params[3];
-    int cellSize = (int)params[4];
+HogSvmDetector::HogSvmDetector(string window, DetectorParams params): ObjectDetector(window, params) {
+    setParams(params);
+    reset();
+}
 
+void HogSvmDetector::setParams(DetectorParams params) {
+    int width = (int)params["windowwidth"];
+    int height = (int)params["windowheight"];
+    int blockSize = (int)params["blocksize"];
+    int blockStride = (int)params["blockstride"];
+    int cellSize = (int)params["cellsize"];
+
+    // Setup up the HOG classifier
     hog_.winSize = Size(width, height);
     hog_.blockSize = Size(blockSize, blockSize);
     hog_.blockStride = Size(blockStride, blockStride);
     hog_.cellSize = Size(cellSize, cellSize);
+
+    // Get the hog-svm model file
+    model_ = (string)params["model"];
 }
 
 void HogSvmDetector::reset() {

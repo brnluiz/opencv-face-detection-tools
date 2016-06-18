@@ -12,7 +12,7 @@ using namespace std;
 
 class SourceHandlerFactory {
 public:
-    SourceHandler* make(string name, string source);
+    SourceHandler* make(string source);
 };
 
 #endif // SOURCEHANDLERFACTORY_H

@@ -14,12 +14,13 @@ using namespace cv::ml;
 class HogSvmDetector: public ObjectDetector {
 public:
     HogSvmDetector(string window);
-    HogSvmDetector(string window, string model, float *params);
+    HogSvmDetector(DetectorParams params);
+    HogSvmDetector(string window, DetectorParams params);
 
     vector<Rect> detect(Mat& frame);
     void reset();
 protected:
-    void setParams(float *params);
+    void setParams(DetectorParams params);
 private:
     vector<float> getDetector();
 

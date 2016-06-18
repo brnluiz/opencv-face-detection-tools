@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<opencv_storage>
+<blocksize>16</blocksize>
+<blockstride>8</blockstride>
+<cellsize>8</cellsize>
+<windowwidth>48</windowwidth>
+<windowheight>64</windowheight>
+<model>/home/brunoluiz/qt/FaceDetectionTools/Data/models/model_2016_06_17_08_20_39_faces94.lst.xml</model>
+</opencv_storage>

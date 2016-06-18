@@ -10,21 +10,31 @@ CascadeDetector::CascadeDetector(string window): ObjectDetector(window) {
     reset();
 }
 
-CascadeDetector::CascadeDetector(string window, string model, float *params): ObjectDetector(window, model, params) {
+CascadeDetector::CascadeDetector(DetectorParams params): ObjectDetector(params) {
+    setParams(params);
+    reset();
+}
+
+CascadeDetector::CascadeDetector(string window, DetectorParams params): ObjectDetector(window, params) {
+    setParams(params);
     reset();
 }
 
 void CascadeDetector::reset() {
     if( !classifier_.load(model_) ) {
-        // TODO: DO SOMETHING
+        // TODO: Throw an exception
     };
 }
 
-vector<Rect> CascadeDetector::detect(Mat &frame) {
-    Mat frame_gray;
+void CascadeDetector::setParams(DetectorParams params) {
+    // Get the cascade model file
+    model_ = (string)params["model"];
+}
 
+vector<Rect> CascadeDetector::detect(Mat &frame) {
     frame_ = frame;
 
+    Mat frame_gray;
     // Pre-process the image
     cvtColor( frame, frame_gray, COLOR_BGR2GRAY );
     equalizeHist( frame_gray, frame_gray );

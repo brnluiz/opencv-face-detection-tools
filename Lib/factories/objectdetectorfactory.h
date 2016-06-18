@@ -11,7 +11,8 @@ using namespace std;
 
 class ObjectDetectorFactory {
 public:
-    ObjectDetector* make(string type, string model, float *params);
+    ObjectDetector *make(string type, DetectorParams params);
+    ObjectDetector *make(string type, DetectorParams params, string window);
 };
 
 #endif // OBJECTDETECTORFACTORY_H

@@ -7,11 +7,11 @@
 
 using namespace std;
 
-SourceHandler *SourceHandlerFactory::make(string name, string source) {
-    if (name == "cam") {
-        return new CamHandler(source);
+SourceHandler *SourceHandlerFactory::make(string source) {
+    if (source == "cam") {
+        return new CamHandler("default");
     }
-    else if (name == "image") {
+    else if (imread(source).data != NULL) {
         return new ImageHandler(source);
     }
     else {

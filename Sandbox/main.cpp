@@ -17,12 +17,13 @@ void checkParameters(float *params, int size) {
 
 int main( int argc, char** argv ) {
     // Parse the arguments
-    cv::CommandLineParser parser(argc, argv,
-                                 "{help h|| show help message}"
-                                 "{type||detector type (cascade, hogsvm)}"
-                                 "{config||config file with all required parameters (open cv xml/yml format)}"
-                                 "{src||source file/mode (cam, path+image.jpg, path+video.mpeg)}"
-                                 );
+    cv::CommandLineParser parser(
+        argc, argv,
+        "{help h|| show help message}"
+        "{type||detector type (cascade, hogsvm)}"
+        "{config||config file with all required parameters (open cv xml/yml format)}"
+        "{src||source file/mode (cam, path+image.jpg, path+video.mpeg)}"
+        );
 
     // Print help, if needed
     if (parser.has("help")) {
@@ -39,51 +40,17 @@ int main( int argc, char** argv ) {
         exit(-1);
     }
 
+    // Configure the source handler and load the source
+    SourceHandlerFactory sourceFactory;
+    SourceHandler* source = sourceFactory.make(src);
 
     // Open the config file
     FileStorage fs;
     fs.open(config, FileStorage::READ);
 
-    // Init the ObjectDetector instances (still need the configs)
+    // Init the ObjectDetector
     ObjectDetectorFactory detectorFactory;
-    ObjectDetector *detector;
-    float params[10] = {0};
-
-    // Get data from the config file and create the detector
-    if (type == "cascade") {
-        string model = (string)fs["model"];
-
-        detector = detectorFactory.make("cascade", model, params);
-    } else if (type == "hogsvm") {
-        // Get data from the specs file
-        string model = (string)fs["model"];
-        params[0] = (float)fs["windowwidth"];
-        params[1] = (float)fs["windowheight"];
-        params[2] = (float)fs["blocksize"];
-        params[3] = (float)fs["blockstride"];
-        params[4] = (float)fs["cellsize"];
-
-        detector = detectorFactory.make("hogsvm", model, params);
-    } else {
-        cerr << "Model not available" << endl;
-        exit(-1);
-    }
-
-    // Configure the source handler
-    SourceHandlerFactory sourceFactory;
-    SourceHandler *source;
-
-    if (src == "cam") {
-        source = sourceFactory.make("cam", "default");
-    } else if ( (src.find("jpg") != std::string::npos)
-                || (src.find("jpeg") != std::string::npos)
-                || (src.find("JPG") != std::string::npos)
-                || (src.find("JPEG") != std::string::npos) ) {
-        source = sourceFactory.make("image", src);
-    } else {
-        cerr << "Source handler not available" << endl;
-        exit(-1);
-    }
+    ObjectDetector *detector = detectorFactory.make(type, fs, "FaceDetection Sandbox");
 
     // Start processing
     cout << "Press ESC to stop processing" << endl;
