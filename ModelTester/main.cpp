@@ -10,7 +10,7 @@ int main(int argc, char *argv[]) {
     // Parse the arguments
     cv::CommandLineParser parser(argc, argv,
                                  "{help h|| show help message}"
-                                 "{model||model file + parameteres (open cv xml/yml format)}"
+                                 "{model||model file + parameters (open cv xml/yml format)}"
                                  "{type||detector type (cascade, hogsvm)}"
                                  "{src||test list with the paths of the images (must match the ground list)}"
                                  "{ground||ground list with the bounding boxes}"

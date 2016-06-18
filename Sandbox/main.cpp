@@ -19,13 +19,9 @@ int main( int argc, char** argv ) {
     // Parse the arguments
     cv::CommandLineParser parser(argc, argv,
                                  "{help h|| show help message}"
-                                 "{model||model file (path+file)}"
                                  "{type||detector type (cascade, hogsvm)}"
+                                 "{config||config file with all required parameters (open cv xml/yml format)}"
                                  "{src||source file/mode (cam, path+image.jpg, path+video.mpeg)}"
-                                 "{hogblock||hog block size}{hogstride||hog block stride}"
-                                 "{hogcell||hog cell size}"
-                                 "{hogwh||hog sliding window height}"
-                                 "{hogww||hog sliding window width}"
                                  );
 
     // Print help, if needed
@@ -35,29 +31,37 @@ int main( int argc, char** argv ) {
     }
 
     // Check if the model and type were passed
-    string model = parser.get<string>("model");
+    string config = parser.get<string>("config");
     string type = parser.get<string>("type");
     string src = parser.get<string>("src");
-    if(model.empty() || type.empty() || src.empty()) {
+    if(config.empty() || type.empty() || src.empty()) {
         cerr << "Please specify a detector type, a source and a model" << endl;
         exit(-1);
     }
 
-    // Configure the detector based on the type variable
+
+    // Open the config file
+    FileStorage fs;
+    fs.open(config, FileStorage::READ);
+
+    // Init the ObjectDetector instances (still need the configs)
     ObjectDetectorFactory detectorFactory;
     ObjectDetector *detector;
     float params[10] = {0};
 
+    // Get data from the config file and create the detector
     if (type == "cascade") {
+        string model = (string)fs["model"];
+
         detector = detectorFactory.make("cascade", model, params);
     } else if (type == "hogsvm") {
-        int size = 5;
-        params[0] = parser.get<float>("hogww");
-        params[1] = parser.get<float>("hogwh");
-        params[2] = parser.get<float>("hogblock");
-        params[3] = parser.get<float>("hogstride");
-        params[4] = parser.get<float>("hogcell");
-        checkParameters(params, size);
+        // Get data from the specs file
+        string model = (string)fs["model"];
+        params[0] = (float)fs["windowwidth"];
+        params[1] = (float)fs["windowheight"];
+        params[2] = (float)fs["blocksize"];
+        params[3] = (float)fs["blockstride"];
+        params[4] = (float)fs["cellsize"];
 
         detector = detectorFactory.make("hogsvm", model, params);
     } else {
