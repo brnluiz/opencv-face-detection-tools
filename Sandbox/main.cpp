@@ -27,9 +27,6 @@ int main( int argc, char** argv ) {
                                  "{hogwh||hog sliding window height}"
                                  "{hogww||hog sliding window width}"
                                  );
-    string model = parser.get<string>("model");
-    string type = parser.get<string>("type");
-    string src = parser.get<string>("src");
 
     // Print help, if needed
     if (parser.has("help")) {
@@ -38,6 +35,9 @@ int main( int argc, char** argv ) {
     }
 
     // Check if the model and type were passed
+    string model = parser.get<string>("model");
+    string type = parser.get<string>("type");
+    string src = parser.get<string>("src");
     if(model.empty() || type.empty() || src.empty()) {
         cerr << "Please specify a detector type, a source and a model" << endl;
         exit(-1);
