@@ -1,11 +1,11 @@
 #ifndef OBJECTDETECTORFACTORY_H
 #define OBJECTDETECTORFACTORY_H
 
+#include <string>
+
 #include "objectdetectors/objectdetector.h"
 #include "objectdetectors/cascadedetector.h"
 #include "objectdetectors/hogsvmdetector.h"
-
-#include <string>
 
 using namespace std;
 

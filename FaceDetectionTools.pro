@@ -1,4 +1,7 @@
 TEMPLATE = subdirs
 
 SUBDIRS += \
-    Sandbox
+    Lib \
+    Sandbox \
+
+CONFIG += ordered

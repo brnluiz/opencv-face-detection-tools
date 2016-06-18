@@ -1,11 +1,12 @@
 #ifndef SOURCEHANDLERFACTORY_H
 #define SOURCEHANDLERFACTORY_H
 
+#include <string>
+
 #include "sourcehandlers/camhandler.h"
 #include "sourcehandlers/imagehandler.h"
 #include "sourcehandlers/sourcehandler.h"
 
-#include <string>
 
 using namespace std;
 
