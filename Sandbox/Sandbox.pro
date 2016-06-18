@@ -3,7 +3,7 @@ QT -= gui
 
 CONFIG += c++11
 
-TARGET = DetectorsSandbox
+TARGET = faces_sandbox
 CONFIG += console
 CONFIG -= app_bundle
 
