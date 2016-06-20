@@ -18,17 +18,25 @@ struct BoundingBox {
     int x2;
     int y2;
 };
-typedef vector<BoundingBox> FacesList;
+typedef vector<BoundingBox> GroundTruthList;
 
-struct ImageInfo {
+struct AccuracyInfo {
+    u_int positives;
+    u_int falsePositives;
+    u_int missed;
+};
+
+struct TestInfo {
     Mat img;
-    FacesList faces;
+    GroundTruthList faces;
     string folder;
     string name;
 
     string file;
+
+    AccuracyInfo accuracy;
 };
-typedef vector<ImageInfo> TestImages;
+typedef vector<TestInfo> TestSet;
 
 // You could also take an existing vector as a parameter.
 vector<string> split(string str, char delimiter) {
@@ -43,9 +51,8 @@ vector<string> split(string str, char delimiter) {
   return internal;
 }
 
-TestImages loadImages( const string & path, const string & list, const string & imagesFolder ) {
+TestSet loadImages( const string & path, const string & list) {
     string listFile = path + list;
-    string testPath = path + imagesFolder;
     ifstream file;
 
     file.open( (listFile).c_str() );
@@ -55,8 +62,8 @@ TestImages loadImages( const string & path, const string & list, const string & 
     }
     cout << "Loading images from: " << listFile << endl;
 
-    TestImages testImages;
-    ImageInfo imgInfo;
+    TestSet testSet;
+    TestInfo testInfo;
     u_int id = 0;
     while(1) {
         // Get the line string
@@ -76,27 +83,28 @@ TestImages loadImages( const string & path, const string & list, const string & 
         int y2 = atoi(info[4].c_str());
 
         // Load file and check if it is invalid or empty
-        Mat img = imread(testPath + src);
+        Mat img = imread(path + src);
         if( img.empty() ) {
             cout << "Non valid image" << endl;
             continue;
         }
 
         // If the file is new
-        if(imgInfo.name != src) {
+        if(testInfo.name != src) {
             // Save previous test image info on the testImages vector
-            if(imgInfo.faces.size() != 0) {
-                testImages.push_back(imgInfo);
+            if(testInfo.faces.size() != 0) {
+                testSet.push_back(testInfo);
                 id = 0;
             }
 
             // Clean test image info and start with new info
-            imgInfo.folder = testPath;
-            imgInfo.name = src;
-            imgInfo.img  = img.clone();
-            imgInfo.file = testPath+src;
+            testInfo.folder = path;
+            testInfo.name = src;
+            testInfo.img  = img.clone();
+            testInfo.file = path+src;
+            testInfo.accuracy = {0, 0, 0};
 
-            imgInfo.faces.clear();
+            testInfo.faces.clear();
         }
 
         // Get the face bounding box
@@ -108,32 +116,20 @@ TestImages loadImages( const string & path, const string & list, const string & 
         bbox.y2 = y2;
 
         // Save the new face to the actual image info storage
-        imgInfo.faces.push_back(bbox);
+        testInfo.faces.push_back(bbox);
 
     }
 
-    return testImages;
-}
-
-float euclideanDist(Point& a, Point& b, int width, int height) {
-    Point diff = a - b;
-
-    return ((float)(diff.x*diff.x)/(width*width) +
-            (float)(diff.y*diff.y)/(height*height));
-}
-
-float intersection(Rect& a, Rect &b) {
-    return (abs(a.x - b.x) * 2 < (a.width + b.width)) &&
-             (abs(a.y - b.y) * 2 < (a.height + b.height));
+    return testSet;
 }
 
 int main(int argc, char *argv[]) {
     // Parse the arguments
     cv::CommandLineParser parser(argc, argv,
                                  "{help h|| show help message}"
-                                 "{model||model file + parameters (open cv xml/yml format)}"
                                  "{type||detector type (cascade, hogsvm)}"
-                                 "{src||test list with the paths of the images (must match the ground list)}"
+                                 "{model||model file + parameters (open cv xml/yml format)}"
+                                 "{path||test list with the paths of the images (must match the ground list)}"
                                  "{output||output folder)}"
                                  "{ground||ground list with the bounding boxes}"
                                  );
@@ -143,40 +139,60 @@ int main(int argc, char *argv[]) {
         exit(0);
     }
 
+
 //    // Check if the model, type, src and ground list were passed
-//    string model = parser.get<string>("model");
-//    string type = parser.get<string>("type");
-//    string src = parser.get<string>("src");
-//    string ground = parser.get<string>("ground");
+    string type = parser.get<string>("type");
+    string model = parser.get<string>("model");
+    string inputPath = parser.get<string>("path");
+    string ground = parser.get<string>("ground");
+    string outputPath = parser.get<string>("output");
 
-//    if(model.empty() || type.empty() || src.empty() || ground.empty()) {
-//        cerr << "Please specify a detector type, a model, a source list and a ground list" << endl;
-//        exit(-1);
-//    }
+    if(model.empty() || type.empty() || inputPath.empty() || ground.empty() || outputPath.empty()) {
+        cerr << "Please specify a detector type, a model, a source list and a ground list" << endl;
+        exit(-1);
+    }
 
-    TestImages list = loadImages("/home/brunoluiz/qt/FaceDetectionTools/Data/test/", "ground_truth_bboxes.txt", "test_jpg/");
+    // Load all images and build the test list
+    TestSet list = loadImages(inputPath, ground);
 
-    ObjectDetectorFactory detectorFactory;
+    // Prepare the CSV files
+    ofstream report;
+    report.open(outputPath + "individual.csv");
+    if(!report.is_open()) {
+        exit(-1);
+    }
+    report << "Test subject" << ","
+           << "Total positives" << ","
+           << "Total false positives" << ","
+           << "Ground truth objects" << ","
+           << "Total missed detections" << ","
+           << "% positives" << ","
+           << "% false positives" << ","
+           << endl;
 
     // Open the config file
     FileStorage fs;
-    fs.open("/home/brunoluiz/qt/FaceDetectionTools/Data/models/specs_haarcascade.xml", FileStorage::READ);
+    fs.open(model, FileStorage::READ);
 
     // Init detector
-    ObjectDetector *detector = detectorFactory.make("cascade", fs);
+    ObjectDetectorFactory detectorFactory;
+    ObjectDetector *detector = detectorFactory.make(type, fs);
+    AccuracyInfo accuracy = {0,0,0};
 
-    for(TestImages::iterator testItem = list.begin(); testItem < list.end(); testItem++) {
-        cout << "> File: " << (*testItem).file << endl;
+    for(TestSet::iterator testItem = list.begin(); testItem < list.end(); testItem++) {
+        float progress = (float)distance(list.begin(), testItem)*100/list.size();
+        cout << "[" << setprecision(2) << progress <<
+                "%] File: " << (*testItem).file << endl;
 
         Mat outputImg = (*testItem).img.clone();
         Mat img = (*testItem).img.clone();
 
         // Make the detection and test it's accuracy
         Objects detections = detector->detect(img);
-        for(FacesList::iterator face = (*testItem).faces.begin(); face < (*testItem).faces.end(); face++) {
+        for(GroundTruthList::iterator ground = (*testItem).faces.begin(); ground < (*testItem).faces.end(); ground++) {
             // Get info about the specified face and plot it
-            Point tlGround = Point((*face).x1, (*face).y1);
-            Point brGround = Point((*face).x2, (*face).y2);
+            Point tlGround = Point((*ground).x1, (*ground).y1);
+            Point brGround = Point((*ground).x2, (*ground).y2);
             Rect groundTruth = Rect(tlGround, brGround);
             rectangle(outputImg, groundTruth, Scalar(255, 0, 0), 1);
 
@@ -195,35 +211,62 @@ int main(int argc, char *argv[]) {
                 if (overlap >= 0.5) {
                     // Remove the detection from the detections vector (to not test with other
                     // ground boxes)
-                    cout << "Positive! Ground truth id: " << (*face).id <<
-                            " New size: " << detections.size() <<
-                            " Detection: " << (*detection) <<
-                            endl;
                     rectangle(outputImg, *detection, Scalar(0, 255, 0), 1);
                     detections.erase(detection);
+                    (*testItem).accuracy.positives++;
+                    accuracy.positives++;
                     break;
                 }
 
                 // Otherwise, false-positive detection
                 rectangle(outputImg, *detection, Scalar(0, 0, 255), 1);
-                cout << "Negative! Ground truth id: " << (*face).id <<
-                        " Box:" << (*detection) <<
-                        " Status: " << std::distance(detections.begin(), detection) << " of " << detections.size() <<
-                        endl;
                 ++detection;
 
             }
+
         }
+        // Get some data for the accuracy
+        (*testItem).accuracy.falsePositives = detections.size();
+        (*testItem).accuracy.missed += (*testItem).faces.size() - (*testItem).accuracy.positives;
+        accuracy.falsePositives += (*testItem).accuracy.falsePositives;
+        accuracy.missed += (*testItem).accuracy.missed;
 
         // Output the image to the results folder
-        string output = "/home/brunoluiz/results/" + (*testItem).name;
+        string output = outputPath + (*testItem).name;
         imwrite(output, outputImg);
 
-        if (waitKey(1) == 27) {
-            cout << "Stop processing" << endl;
-            break;
-        }
+        // Write to the report
+        int totalItems = (*testItem).faces.size();
+        report << (*testItem).name << ","
+               << (*testItem).accuracy.positives << ","
+               << (*testItem).accuracy.falsePositives << ","
+               << totalItems << ","
+               << totalItems - (*testItem).accuracy.positives << ","
+               << setprecision(4) << (float)(*testItem).accuracy.positives / totalItems << ","
+               << setprecision(4) << (float)(*testItem).accuracy.falsePositives / totalItems
+               << endl;
     }
+    report.close();
+
+    // Prepare the CSV files
+    ofstream accReport;
+    accReport.open(outputPath + "accuracy.csv");
+    if(!accReport.is_open()) {
+        exit(-1);
+    }
+    accReport << "Model file" << ","
+           << "Positives" << ","
+           << "False positives" << ","
+           << "Missed"
+           << "Accuracy"
+           << endl;
+
+    accReport << model << ","
+             << (float)accuracy.positives << ","
+             << (float)accuracy.falsePositives << ","
+             << (float)accuracy.missed << ","
+             << (float)accuracy.positives / (accuracy.missed + accuracy.positives)
+             << endl;
 
     delete detector;
 
