@@ -1,8 +1,9 @@
+#include <opencv2/highgui/highgui.hpp>
 #include <string>
 #include <iostream>
+#include <iomanip>
 #include <fstream>
 #include <vector>
-#include <opencv2/highgui/highgui.hpp>
 
 #include "factories/sourcehandlerfactory.h"
 #include "factories/objectdetectorfactory.h"
@@ -11,10 +12,11 @@ using namespace std;
 using namespace cv;
 
 struct BoundingBox {
-    int x;
-    int y;
-    int w;
-    int h;
+    int id;
+    int x1;
+    int y1;
+    int x2;
+    int y2;
 };
 typedef vector<BoundingBox> FacesList;
 
@@ -55,6 +57,7 @@ TestImages loadImages( const string & path, const string & list, const string & 
 
     TestImages testImages;
     ImageInfo imgInfo;
+    u_int id = 0;
     while(1) {
         // Get the line string
         string line;
@@ -67,10 +70,10 @@ TestImages loadImages( const string & path, const string & list, const string & 
 
         vector<string> info = split(line, ' ');
         string src = info[0];
-        int x = atoi(info[1].c_str());
-        int y = atoi(info[2].c_str());
-        int w = atoi(info[3].c_str());
-        int h = atoi(info[4].c_str());
+        int x1 = atoi(info[1].c_str());
+        int y1 = atoi(info[2].c_str());
+        int x2 = atoi(info[3].c_str());
+        int y2 = atoi(info[4].c_str());
 
         // Load file and check if it is invalid or empty
         Mat img = imread(testPath + src);
@@ -84,6 +87,7 @@ TestImages loadImages( const string & path, const string & list, const string & 
             // Save previous test image info on the testImages vector
             if(imgInfo.faces.size() != 0) {
                 testImages.push_back(imgInfo);
+                id = 0;
             }
 
             // Clean test image info and start with new info
@@ -97,10 +101,11 @@ TestImages loadImages( const string & path, const string & list, const string & 
 
         // Get the face bounding box
         BoundingBox bbox;
-        bbox.x = x;
-        bbox.y = y;
-        bbox.w = w;
-        bbox.h = h;
+        bbox.id = id++;
+        bbox.x1 = x1;
+        bbox.y1 = y1;
+        bbox.x2 = x2;
+        bbox.y2 = y2;
 
         // Save the new face to the actual image info storage
         imgInfo.faces.push_back(bbox);
@@ -110,6 +115,18 @@ TestImages loadImages( const string & path, const string & list, const string & 
     return testImages;
 }
 
+float euclideanDist(Point& a, Point& b, int width, int height) {
+    Point diff = a - b;
+
+    return ((float)(diff.x*diff.x)/(width*width) +
+            (float)(diff.y*diff.y)/(height*height));
+}
+
+float intersection(Rect& a, Rect &b) {
+    return (abs(a.x - b.x) * 2 < (a.width + b.width)) &&
+             (abs(a.y - b.y) * 2 < (a.height + b.height));
+}
+
 int main(int argc, char *argv[]) {
     // Parse the arguments
     cv::CommandLineParser parser(argc, argv,
@@ -117,6 +134,7 @@ int main(int argc, char *argv[]) {
                                  "{model||model file + parameters (open cv xml/yml format)}"
                                  "{type||detector type (cascade, hogsvm)}"
                                  "{src||test list with the paths of the images (must match the ground list)}"
+                                 "{output||output folder)}"
                                  "{ground||ground list with the bounding boxes}"
                                  );
     // Print help, if needed
@@ -138,23 +156,76 @@ int main(int argc, char *argv[]) {
 
     TestImages list = loadImages("/home/brunoluiz/qt/FaceDetectionTools/Data/test/", "ground_truth_bboxes.txt", "test_jpg/");
 
-    for(u_int i = 0; i < list.size(); i++){
-        cout << "> File: " << list[i].file << endl;
-        for(u_int j = 0; j < list[i].faces.size(); j++) {
-            cout << ">> Face #" << j << ": " <<
-                    list[i].faces[j].x << ", " <<
-                    list[i].faces[j].y << ", " <<
-                    list[i].faces[j].w << ", " <<
-                    list[i].faces[j].h <<
-                    endl;
+    ObjectDetectorFactory detectorFactory;
+
+    // Open the config file
+    FileStorage fs;
+    fs.open("/home/brunoluiz/qt/FaceDetectionTools/Data/models/specs_haarcascade.xml", FileStorage::READ);
+
+    // Init detector
+    ObjectDetector *detector = detectorFactory.make("cascade", fs);
+
+    for(TestImages::iterator testItem = list.begin(); testItem < list.end(); testItem++) {
+        cout << "> File: " << (*testItem).file << endl;
+
+        Mat outputImg = (*testItem).img.clone();
+        Mat img = (*testItem).img.clone();
+
+        // Make the detection and test it's accuracy
+        Objects detections = detector->detect(img);
+        for(FacesList::iterator face = (*testItem).faces.begin(); face < (*testItem).faces.end(); face++) {
+            // Get info about the specified face and plot it
+            Point tlGround = Point((*face).x1, (*face).y1);
+            Point brGround = Point((*face).x2, (*face).y2);
+            Rect groundTruth = Rect(tlGround, brGround);
+            rectangle(outputImg, groundTruth, Scalar(255, 0, 0), 1);
+
+            // Test the detector accuracy (loop through what was detected and check with the ground truth)
+            for(Objects::iterator detection = detections.begin(); detection < detections.end(); ) {
+
+                // Calculate the overlap of the bounding box with the ground bounding box
+                // If higher than 50%, then it is a positive detection
+                Rect intersectRoi = groundTruth & (*detection);
+                Rect unionRoi = groundTruth | (*detection);
+                float intersectArea = intersectRoi.area();
+                float unionArea = unionRoi.area();
+                float overlap = intersectArea / unionArea;
+
+                // Positive detection
+                if (overlap >= 0.5) {
+                    // Remove the detection from the detections vector (to not test with other
+                    // ground boxes)
+                    cout << "Positive! Ground truth id: " << (*face).id <<
+                            " New size: " << detections.size() <<
+                            " Detection: " << (*detection) <<
+                            endl;
+                    rectangle(outputImg, *detection, Scalar(0, 255, 0), 1);
+                    detections.erase(detection);
+                    break;
+                }
+
+                // Otherwise, false-positive detection
+                rectangle(outputImg, *detection, Scalar(0, 0, 255), 1);
+                cout << "Negative! Ground truth id: " << (*face).id <<
+                        " Box:" << (*detection) <<
+                        " Status: " << std::distance(detections.begin(), detection) << " of " << detections.size() <<
+                        endl;
+                ++detection;
+
+            }
         }
-        imshow("Image", list[i].img);
+
+        // Output the image to the results folder
+        string output = "/home/brunoluiz/results/" + (*testItem).name;
+        imwrite(output, outputImg);
 
         if (waitKey(1) == 27) {
             cout << "Stop processing" << endl;
             break;
         }
     }
+
+    delete detector;
 
     return 0;
 }

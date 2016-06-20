@@ -2,7 +2,7 @@ TEMPLATE = subdirs
 
 SUBDIRS += \
     Lib \
-    Sandbox \
     ModelTester \
+    Sandbox \
 
 CONFIG += ordered

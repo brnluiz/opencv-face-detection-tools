@@ -9,6 +9,7 @@ CONFIG += console
 CONFIG -= app_bundle
 
 
+
 INCLUDEPATH += /usr/local/include/opencv
 INCLUDEPATH += $$PWD/../Lib
 DEPENDPATH += $$PWD/../Lib
