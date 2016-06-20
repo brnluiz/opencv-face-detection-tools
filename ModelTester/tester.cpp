@@ -208,7 +208,7 @@ int main(int argc, char *argv[]) {
                 float overlap = intersectArea / unionArea;
 
                 // Positive detection
-                if (overlap >= 0.5) {
+                if (overlap >= 0.4) {
                     // Remove the detection from the detections vector (to not test with other
                     // ground boxes)
                     rectangle(outputImg, *detection, Scalar(0, 255, 0), 1);
@@ -234,6 +234,15 @@ int main(int argc, char *argv[]) {
         // Output the image to the results folder
         string output = outputPath + (*testItem).name;
         imwrite(output, outputImg);
+
+        // Hard mining (save the negatives)
+        for(Objects::iterator roi = detections.begin(); roi < detections.end(); roi++) {
+            Mat negative = img((*roi));
+            string index = to_string(distance(detections.begin(), roi));
+            string output = outputPath + "hardmining/"  + (*testItem).name + index + ".jpg";
+            cout << output << endl;
+            imwrite(output, negative);
+        }
 
         // Write to the report
         int totalItems = (*testItem).faces.size();
@@ -272,3 +281,5 @@ int main(int argc, char *argv[]) {
 
     return 0;
 }
+
+// ./faces_modeltester --model="/home/brunoluiz/qt/FaceDetectionTools/Data/models/specs_model_2016_06_17_08_20_39_faces94.lst.xml" --type=hogsvm --path="/home/brunoluiz/qt/FaceDetectionTools/Data/test/test_jpg/" --ground="ground_truth_bboxes.txt" --output="/home/brunoluiz/results/"
