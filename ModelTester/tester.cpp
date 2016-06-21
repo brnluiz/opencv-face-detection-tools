@@ -24,6 +24,7 @@ struct AccuracyInfo {
     u_int positives;
     u_int falsePositives;
     u_int missed;
+    double execCycles;
 };
 
 struct TestInfo {
@@ -168,6 +169,8 @@ int main(int argc, char *argv[]) {
            << "Total missed detections" << ","
            << "% positives" << ","
            << "% false positives" << ","
+           << "Exec time (cycles)" << ","
+           << "Exec time (seconds)" << ","
            << endl;
 
     // Open the config file
@@ -187,8 +190,12 @@ int main(int argc, char *argv[]) {
         Mat outputImg = (*testItem).img.clone();
         Mat img = (*testItem).img.clone();
 
-        // Make the detection and test it's accuracy
+        // Make the detection for this test item
+        double t0 = cv::getTickCount();
         Objects detections = detector->detect(img);
+        double t1 = cv::getTickCount();
+
+        // Test the detection accuracy checking each ground truth photo
         for(GroundTruthList::iterator ground = (*testItem).faces.begin(); ground < (*testItem).faces.end(); ground++) {
             // Get info about the specified face and plot it
             Point tlGround = Point((*ground).x1, (*ground).y1);
@@ -209,11 +216,9 @@ int main(int argc, char *argv[]) {
 
                 // Positive detection
                 if (overlap >= 0.4) {
-                    // Remove the detection from the detections vector (to not test with other
-                    // ground boxes)
+                    // Remove the detection from the detections vector (to not test it again)
                     rectangle(outputImg, *detection, Scalar(0, 255, 0), 1);
                     detections.erase(detection);
-                    (*testItem).accuracy.positives++;
                     accuracy.positives++;
                     break;
                 }
@@ -225,21 +230,27 @@ int main(int argc, char *argv[]) {
             }
 
         }
-        // Get some data for the accuracy
+
+        // Save accuracy data for the individual test item
         (*testItem).accuracy.falsePositives = detections.size();
-        (*testItem).accuracy.missed += (*testItem).faces.size() - (*testItem).accuracy.positives;
+        (*testItem).accuracy.missed = (*testItem).faces.size() - (*testItem).accuracy.positives;
+        (*testItem).accuracy.execCycles = (double)(t1-t0); // /cv::getTickFrequency()
+
+        // Save accuracy data for the overall report
+        accuracy.positives += (*testItem).accuracy.positives;
         accuracy.falsePositives += (*testItem).accuracy.falsePositives;
         accuracy.missed += (*testItem).accuracy.missed;
+        accuracy.execCycles += (*testItem).accuracy.execCycles;
 
         // Output the image to the results folder
         string output = outputPath + (*testItem).name;
         imwrite(output, outputImg);
 
-        // Hard mining (save the negatives)
+        // Hard mining (save the false positives)
         for(Objects::iterator roi = detections.begin(); roi < detections.end(); roi++) {
             Mat negative = img((*roi));
             string index = to_string(distance(detections.begin(), roi));
-            string output = outputPath + "hardmining/"  + (*testItem).name + index + ".jpg";
+            string output = outputPath + "false-positives/"  + (*testItem).name + index + ".jpg";
             cout << output << endl;
             imwrite(output, negative);
         }
@@ -252,7 +263,9 @@ int main(int argc, char *argv[]) {
                << totalItems << ","
                << totalItems - (*testItem).accuracy.positives << ","
                << setprecision(4) << (float)(*testItem).accuracy.positives / totalItems << ","
-               << setprecision(4) << (float)(*testItem).accuracy.falsePositives / totalItems
+               << setprecision(4) << (float)(*testItem).accuracy.falsePositives / totalItems << ","
+               << (*testItem).accuracy.execCycles << ","
+               << (*testItem).accuracy.execCycles / cv::getTickFrequency() << ","
                << endl;
     }
     report.close();
@@ -266,15 +279,19 @@ int main(int argc, char *argv[]) {
     accReport << "Model file" << ","
            << "Positives" << ","
            << "False positives" << ","
-           << "Missed"
-           << "Accuracy"
+           << "Missed" << ","
+           << "Accuracy" << ","
+           << "Exec time (cycles)" << ","
+           << "Exec time (seconds)" << ","
            << endl;
 
     accReport << model << ","
              << (float)accuracy.positives << ","
              << (float)accuracy.falsePositives << ","
              << (float)accuracy.missed << ","
-             << (float)accuracy.positives / (accuracy.missed + accuracy.positives)
+             << (float)accuracy.positives / (accuracy.missed + accuracy.positives) << ","
+             << (float)accuracy.execCycles << ","
+             << (float)accuracy.execCycles / cv::getTickFrequency() << ","
              << endl;
 
     delete detector;
