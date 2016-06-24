@@ -103,7 +103,7 @@ TestSet loadImages( const string & path, const string & list) {
             testInfo.name = src;
             testInfo.img  = img.clone();
             testInfo.file = path+src;
-            testInfo.accuracy = {0, 0, 0};
+            testInfo.accuracy = {0, 0, 0, 0};
 
             testInfo.faces.clear();
         }
@@ -129,7 +129,7 @@ int main(int argc, char *argv[]) {
     cv::CommandLineParser parser(argc, argv,
                                  "{help h|| show help message}"
                                  "{type||detector type (cascade, hogsvm)}"
-                                 "{model||model file + parameters (open cv xml/yml format)}"
+                                 "{config||model file + parameters (open cv xml/yml format)}"
                                  "{path||test list with the paths of the images (must match the ground list)}"
                                  "{output||output folder)}"
                                  "{ground||ground list with the bounding boxes}"
@@ -143,12 +143,12 @@ int main(int argc, char *argv[]) {
 
 //    // Check if the model, type, src and ground list were passed
     string type = parser.get<string>("type");
-    string model = parser.get<string>("model");
+    string config = parser.get<string>("config");
     string inputPath = parser.get<string>("path");
     string ground = parser.get<string>("ground");
     string outputPath = parser.get<string>("output");
 
-    if(model.empty() || type.empty() || inputPath.empty() || ground.empty() || outputPath.empty()) {
+    if(config.empty() || type.empty() || inputPath.empty() || ground.empty() || outputPath.empty()) {
         cerr << "Please specify a detector type, a model, a source list and a ground list" << endl;
         exit(-1);
     }
@@ -175,12 +175,12 @@ int main(int argc, char *argv[]) {
 
     // Open the config file
     FileStorage fs;
-    fs.open(model, FileStorage::READ);
+    fs.open(config, FileStorage::READ);
 
     // Init detector
     ObjectDetectorFactory detectorFactory;
     ObjectDetector *detector = detectorFactory.make(type, fs);
-    AccuracyInfo accuracy = {0,0,0};
+    AccuracyInfo accuracy = {0,0,0,0};
 
     for(TestSet::iterator testItem = list.begin(); testItem < list.end(); testItem++) {
         float progress = (float)distance(list.begin(), testItem)*100/list.size();
@@ -250,7 +250,7 @@ int main(int argc, char *argv[]) {
         for(Objects::iterator roi = detections.begin(); roi < detections.end(); roi++) {
             Mat negative = img((*roi));
             string index = to_string(distance(detections.begin(), roi));
-            string output = outputPath + "false-positives/"  + (*testItem).name + index + ".jpg";
+            string output = outputPath + "false-positives/"  + config + "_" + (*testItem).name + index + ".jpg";
             cout << output << endl;
             imwrite(output, negative);
         }
@@ -285,7 +285,7 @@ int main(int argc, char *argv[]) {
            << "Exec time (seconds)" << ","
            << endl;
 
-    accReport << model << ","
+    accReport << config << ","
              << (float)accuracy.positives << ","
              << (float)accuracy.falsePositives << ","
              << (float)accuracy.missed << ","
@@ -298,5 +298,3 @@ int main(int argc, char *argv[]) {
 
     return 0;
 }
-
-// ./faces_modeltester --model="/home/brunoluiz/qt/FaceDetectionTools/Data/models/specs_model_2016_06_17_08_20_39_faces94.lst.xml" --type=hogsvm --path="/home/brunoluiz/qt/FaceDetectionTools/Data/test/test_jpg/" --ground="ground_truth_bboxes.txt" --output="/home/brunoluiz/results/"
