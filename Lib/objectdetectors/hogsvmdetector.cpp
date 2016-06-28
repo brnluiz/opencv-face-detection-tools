@@ -118,7 +118,7 @@ vector<Rect> HogSvmDetector::detect(Mat &frame) {
 
     // Save the new objects (after NMS) to the objects_ vector
     objects_.clear();
-    for(u_int i = 0; i < boxesOut; i++) {
+    for(int i = 0; i < boxesOut; i++) {
         Rect bb = Rect(tlPointsOut[i], brPointsOut[i]);
         objects_.push_back(bb);
     }

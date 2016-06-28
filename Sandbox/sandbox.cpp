@@ -1,21 +1,18 @@
 #include <iostream>
 
+#include "measurementtools/measuredistancetool.h"
 #include "factories/sourcehandlerfactory.h"
 #include "factories/objectdetectorfactory.h"
+
+#define KNOWN_DISTANCE    57.0
+#define KNOWN_WIDTH       17.0
+#define KNOWN_WIDTH_PIXEL 176
+#define INTERVAL_COUNTER  10
 
 using namespace std;
 using namespace cv;
 
-void checkParameters(float *params, int size) {
-    for(int i = 0; i < size; i++) {
-        if (params[i] == 0) {
-            cerr << "Parameter " << i << " is missing!" << endl;
-            exit(-1);
-        }
-    }
-}
-
-int main( int argc, char** argv ) {
+int main(int argc, char** argv) {
     // Parse the arguments
     cv::CommandLineParser parser(
         argc, argv,
@@ -52,28 +49,47 @@ int main( int argc, char** argv ) {
     ObjectDetectorFactory detectorFactory;
     ObjectDetector *detector = detectorFactory.make(type, fs, "FaceDetection Sandbox");
 
+    // Calculate the focal length depending on the parameters
+    MeasureDistanceTool distance(KNOWN_DISTANCE, KNOWN_WIDTH, KNOWN_WIDTH_PIXEL);
+    int counter = 0;
+
     // Start processing
-    cout << "Press ESC to stop processing" << endl;
+    cout << "Press ESC to stop processing task" << endl;
     while(!source->isFinished()) {
         // Get the actual frame
         Mat frame = source->get();
 
         // Detect the face
-        detector->detect(frame);
+        Objects detections = detector->detect(frame);
 
         // Show the face for the user
         detector->show();
 
-        // Stop if ESC is pressed
+        // Measure the distance of the detected face to the source
+        if(detections.size() == 1 && counter == 0) {
+            Rect face = detections[0];
+            cout << face.size().width << "x" << face.size().height << endl;
+            cout << "Distance: " << distance.get(face) << endl;
+            cout << "###" << endl;
+        }
+
+        // Counter for periodic tasks
+        counter++;
+        if (counter > INTERVAL_COUNTER) {
+            counter = 0;
+        }
+
+        // Stop processing if ESC is pressed
         if (waitKey(1) == 27) {
-            cout << "Stop processing" << endl;
+            cout << "Stopping processing task..." << endl;
             break;
         }
     }
+    cout << "Processing task finished" << endl;
 
-    cout << "Press ESC to exit" << endl;
+    cout << "Press ESC to leave" << endl;
     if (waitKey(0) == 27) {
-        cout << "Good bye!" << endl;
+        cout << "Leaving..." << endl;
     }
 
     delete detector;
