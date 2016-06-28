@@ -1,4 +1,5 @@
 #include <iostream>
+#include <memory>
 
 #include "measurementtools/measuredistancetool.h"
 #include "factories/sourcehandlerfactory.h"
@@ -39,7 +40,7 @@ int main(int argc, char** argv) {
 
     // Configure the source handler and load the source
     SourceHandlerFactory sourceFactory;
-    SourceHandler* source  = sourceFactory.make(src);
+    shared_ptr<SourceHandler> source(sourceFactory.make(src));
     SourceHandler::Type sourceType = source->getType();
 
     // Open the config file
@@ -48,7 +49,7 @@ int main(int argc, char** argv) {
 
     // Init the ObjectDetector
     ObjectDetectorFactory detectorFactory;
-    ObjectDetector *detector = detectorFactory.make(type, fs, "FaceDetection Sandbox");
+    shared_ptr<ObjectDetector> detector(detectorFactory.make(type, fs, "FaceDetection Sandbox"));
 
     // Calculate the focal length depending on the parameters
     MeasureDistanceTool distance(KNOWN_DISTANCE, KNOWN_WIDTH, KNOWN_WIDTH_PIXEL);
@@ -94,9 +95,6 @@ int main(int argc, char** argv) {
             cout << "Leaving..." << endl;
         }
     }
-
-    delete detector;
-    delete source;
 
     return 0;
 }

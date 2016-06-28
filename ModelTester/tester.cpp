@@ -4,6 +4,7 @@
 #include <iomanip>
 #include <fstream>
 #include <vector>
+#include <memory>
 
 #include "factories/sourcehandlerfactory.h"
 #include "factories/objectdetectorfactory.h"
@@ -179,7 +180,7 @@ int main(int argc, char *argv[]) {
 
     // Init detector
     ObjectDetectorFactory detectorFactory;
-    ObjectDetector *detector = detectorFactory.make(type, fs);
+    shared_ptr<ObjectDetector> detector(detectorFactory.make(type, fs));
     AccuracyInfo accuracy = {0,0,0,0};
 
     for(TestSet::iterator testItem = list.begin(); testItem < list.end(); testItem++) {
@@ -293,8 +294,6 @@ int main(int argc, char *argv[]) {
              << (float)accuracy.execCycles << ","
              << (float)accuracy.execCycles / cv::getTickFrequency() << ","
              << endl;
-
-    delete detector;
 
     return 0;
 }
