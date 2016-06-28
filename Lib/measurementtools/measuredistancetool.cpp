@@ -1,3 +1,5 @@
+#include <stdexcept>
+
 #include "measuredistancetool.h"
 
 MeasureDistanceTool::MeasureDistanceTool(float distanceCm, float widthCm, float widthPx) {
@@ -7,7 +9,7 @@ MeasureDistanceTool::MeasureDistanceTool(float distanceCm, float widthCm, float 
 
 MeasureDistanceTool::MeasureDistanceTool(vector<float> distancesCm, vector<float> widthsCm, vector<float> widthsPx) {
     if(distancesCm.size() != widthsCm.size() || distancesCm.size() != widthsPx.size() || widthsCm.size() == widthsPx.size()) {
-        // ERROR
+        throw length_error("Vectors of different sizes");
     }
 
     float focalSum = 0;
@@ -29,6 +31,10 @@ MeasureDistanceTool::MeasureDistanceTool(vector<float> distancesCm, vector<float
 }
 
 MeasureDistanceTool::MeasureDistanceTool(vector<MeasureDistanceParam> params) {
+    if(params.size() == 0) {
+        throw invalid_argument("Params argument is empty");
+    }
+
     float focalSum = 0;
     float widthSum = 0;
     int size = params.size();
@@ -51,7 +57,7 @@ float MeasureDistanceTool::get(Rect object) {
     float objWidthPx = object.size().width;
 
     if (objWidthPx == 0) {
-        // ERROR
+        throw length_error("Rectangle width is 0 (empty detection)");
     }
 
     return (knownWidthCm_ * focalLengthPx_) / objWidthPx;

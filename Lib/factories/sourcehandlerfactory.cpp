@@ -1,4 +1,5 @@
 #include <string>
+#include <stdexcept>
 
 #include "sourcehandlers/camhandler.h"
 #include "sourcehandlers/imagehandler.h"
@@ -15,6 +16,6 @@ SourceHandler *SourceHandlerFactory::make(string source) {
         return new ImageHandler(source);
     }
     else {
-        return new CamHandler("default");
+        throw invalid_argument("Invalid source type");
     }
 }

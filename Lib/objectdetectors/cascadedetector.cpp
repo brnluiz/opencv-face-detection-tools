@@ -3,6 +3,7 @@
 #include <opencv2/highgui.hpp>
 #include <opencv2/imgproc.hpp>
 #include <string>
+#include <stdexcept>
 
 #include "objectdetectors/cascadedetector.h"
 
@@ -22,11 +23,15 @@ CascadeDetector::CascadeDetector(string window, DetectorParams params): ObjectDe
 
 void CascadeDetector::reset() {
     if( !classifier_.load(model_) ) {
-        // TODO: Throw an exception
+        throw invalid_argument("Cannot load the model");
     };
 }
 
 void CascadeDetector::setParams(DetectorParams params) {
+    if(!params.isOpened()) {
+        throw invalid_argument("Parameters file not loaded");
+    }
+
     // Get the cascade model file
     model_ = (string)params["model"];
 }

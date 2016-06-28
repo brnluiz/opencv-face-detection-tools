@@ -1,3 +1,5 @@
+#include <stdexcept>
+
 #include "camhandler.h"
 
 CamHandler::CamHandler(): SourceHandler() {
@@ -21,7 +23,7 @@ void CamHandler::open(string source) {
 
     // Try to open the stream
     if (!stream_.open(id)) {
-        // TODO: throw an exception on errors
+        throw runtime_error("Could not open the camera stream");
     }
 }
 
@@ -30,7 +32,7 @@ Mat CamHandler::get() {
     stream_ >> frame;
 
     if(frame.empty()) {
-        // TODO: throw an exception
+        throw runtime_error("Could not get the camera frame");
     }
 
     return frame;

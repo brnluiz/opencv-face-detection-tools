@@ -1,4 +1,5 @@
 #include <string>
+#include <stdexcept>
 
 #include "objectdetectors/objectdetector.h"
 #include "objectdetectors/cascadedetector.h"
@@ -22,5 +23,7 @@ ObjectDetector *ObjectDetectorFactory::make(string type, DetectorParams params) 
     }
     else if (type == "cascade") {
         return new CascadeDetector(params);
+    } else {
+        throw invalid_argument("Invalid detector type");
     }
 }

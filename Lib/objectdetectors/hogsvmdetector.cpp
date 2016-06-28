@@ -5,6 +5,7 @@
 #include <opencv2/opencv.hpp>
 #include <string>
 #include <algorithm>
+#include <stdexcept>
 
 #include "objectdetectors/hogsvmdetector.h"
 
@@ -33,6 +34,10 @@ HogSvmDetector::HogSvmDetector(string window, DetectorParams params): ObjectDete
 }
 
 void HogSvmDetector::setParams(DetectorParams params) {
+    if(!params.isOpened()) {
+        throw invalid_argument("Parameters file not loaded");
+    }
+
     int width = (int)params["windowwidth"];
     int height = (int)params["windowheight"];
     int blockSize = (int)params["blocksize"];

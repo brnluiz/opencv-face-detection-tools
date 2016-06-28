@@ -1,3 +1,5 @@
+#include <stdexcept>
+
 #include "objectdetectors/objectdetector.h"
 
 ObjectDetector::ObjectDetector(string window) {
@@ -16,8 +18,7 @@ ObjectDetector::~ObjectDetector() {
 
 void ObjectDetector::show() {
     if (window_.empty()) {
-        cerr << "You need to setup a window: setWindow(string)" << endl;
-        return ;
+        throw runtime_error("No Window was defined for the detector");
     }
 
     for (size_t i = 0; i < objects_.size(); i++) {

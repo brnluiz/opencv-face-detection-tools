@@ -1,6 +1,7 @@
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
 #include <string>
+#include <stdexcept>
 
 #include "sourcehandlers/sourcehandler.h"
 #include "sourcehandlers/imagehandler.h"
@@ -21,11 +22,15 @@ ImageHandler::~ImageHandler() {}
 
 void ImageHandler::open(string source) {
     file_ = imread(source, CV_LOAD_IMAGE_COLOR);
+
+    if(file_.empty()) {
+        throw invalid_argument("Invalid image");
+    }
 }
 
 Mat ImageHandler::get() {
     if(file_.empty()) {
-        // TODO: Throw an exception
+        throw invalid_argument("Not image was loaded");
     }
 
     finished_ = true;
