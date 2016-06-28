@@ -12,7 +12,7 @@ public:
     SourceHandler(): finished_(0) {;}
     SourceHandler(string source): finished_(0), source_(source) {
     }
-    ~SourceHandler() {}
+    virtual ~SourceHandler() {}
 
     virtual void open(string source) = 0;
     virtual Mat get() = 0;

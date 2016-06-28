@@ -11,6 +11,9 @@ ObjectDetector::ObjectDetector(string window, DetectorParams params): params_(pa
     setWindow(window);
 }
 
+ObjectDetector::~ObjectDetector() {
+}
+
 void ObjectDetector::show() {
     if (window_.empty()) {
         cerr << "You need to setup a window: setWindow(string)" << endl;

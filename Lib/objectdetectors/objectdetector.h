@@ -16,6 +16,7 @@ public:
     ObjectDetector(string window);
     ObjectDetector(DetectorParams params);
     ObjectDetector(string window, DetectorParams params);
+    virtual ~ObjectDetector();
 
     virtual void show();
     virtual void reset() = 0;
