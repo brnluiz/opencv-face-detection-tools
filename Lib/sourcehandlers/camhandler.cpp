@@ -1,8 +1,11 @@
 #include "camhandler.h"
 
-CamHandler::CamHandler(): SourceHandler() {}
+CamHandler::CamHandler(): SourceHandler() {
+    type_ = Type::Cam;
+}
 
 CamHandler::CamHandler(string source): SourceHandler(source) {
+    type_ = Type::Cam;
     open(source);
 }
 

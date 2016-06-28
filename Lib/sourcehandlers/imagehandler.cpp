@@ -8,9 +8,12 @@
 using namespace std;
 using namespace cv;
 
-ImageHandler::ImageHandler(): SourceHandler() {}
+ImageHandler::ImageHandler(): SourceHandler() {
+    type_ = Type::Image;
+}
 
 ImageHandler::ImageHandler(string source): SourceHandler(source) {
+    type_ = Type::Image;
     open(source);
 }
 

@@ -18,9 +18,14 @@ public:
     virtual Mat get() = 0;
 
     bool isFinished() { return finished_; }
+
+    enum Type {Cam, Image, Video};
+    Type getType() { return type_; }
+
 protected:
     bool finished_;
     string source_;
+    Type type_;
 };
 
 #endif // SOURCEHANDLER_H

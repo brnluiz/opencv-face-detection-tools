@@ -39,7 +39,8 @@ int main(int argc, char** argv) {
 
     // Configure the source handler and load the source
     SourceHandlerFactory sourceFactory;
-    SourceHandler* source = sourceFactory.make(src);
+    SourceHandler* source  = sourceFactory.make(src);
+    SourceHandler::Type sourceType = source->getType();
 
     // Open the config file
     FileStorage fs;
@@ -87,9 +88,11 @@ int main(int argc, char** argv) {
     }
     cout << "Processing task finished" << endl;
 
-    cout << "Press ESC to leave" << endl;
-    if (waitKey(0) == 27) {
-        cout << "Leaving..." << endl;
+    if (sourceType != SourceHandler::Cam) {
+        cout << "Press ESC to leave" << endl;
+        if (waitKey(0) == 27) {
+            cout << "Leaving..." << endl;
+        }
     }
 
     delete detector;
