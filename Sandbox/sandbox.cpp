@@ -99,6 +99,8 @@ int main(int argc, char** argv) {
                 cout << "Leaving..." << endl;
             }
         }
+
+        waitKey(1);
     }
     catch (cv::Exception &e) {
         cerr << "[opencv][error] " << e.what() << endl;
