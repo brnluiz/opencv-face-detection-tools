@@ -2,13 +2,14 @@
 #include <memory>
 #include <stdexcept>
 
+#include "gui/viewer.h"
 #include "measurementtools/measuredistancetool.h"
 #include "factories/sourcehandlerfactory.h"
 #include "factories/objectdetectorfactory.h"
 
-#define KNOWN_DISTANCE    57.0
+#define KNOWN_DISTANCE    100.0
 #define KNOWN_WIDTH       17.0
-#define KNOWN_WIDTH_PIXEL 176
+#define KNOWN_WIDTH_PIXEL 2080
 #define INTERVAL_COUNTER  10
 
 using namespace std;
@@ -50,11 +51,14 @@ int main(int argc, char** argv) {
 
         // Init the ObjectDetector
         ObjectDetectorFactory detectorFactory;
-        shared_ptr<ObjectDetector> detector(detectorFactory.make(type, fs, "FaceDetection Sandbox"));
+        shared_ptr<ObjectDetector> detector(detectorFactory.make(type, fs));
 
         // Calculate the focal length depending on the parameters
         MeasureDistanceTool distance(KNOWN_DISTANCE, KNOWN_WIDTH, KNOWN_WIDTH_PIXEL);
         int counter = 0;
+
+        // Start a Window
+        Viewer window("FaceDectection Sandbox");
 
         // Start processing
         cout << "Press ESC to stop processing task" << endl;
@@ -62,15 +66,28 @@ int main(int argc, char** argv) {
             // Get the actual frame
             Mat frame = source->get();
 
+            // Save it to the viewer window (it will be used to draw the results on it)
+            window.setFrame(frame);
+
             // Detect the face
             Objects detections = detector->detect(frame);
 
             // Show the face for the user
-            detector->show();
+            window.draw(detections);
+            window.show();
 
             // Measure the distance of the detected face to the source
-            if(detections.size() == 1 && counter == 0) {
+            if(detections.size() >= 1 && counter == 0) {
                 Rect face = detections[0];
+
+                if (detections.size() > 1) {
+                    for(Objects::iterator it = detections.begin(); it < detections.end(); it++) {
+                        if ((*it).size().area() > face.size().area()) {
+                            face = (*it);
+                        }
+                    }
+                }
+
                 cout << face.size().width << "x" << face.size().height << endl;
                 cout << "Distance: " << distance.get(face) << endl;
                 cout << "###" << endl;

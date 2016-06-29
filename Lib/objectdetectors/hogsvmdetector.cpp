@@ -20,15 +20,7 @@ using namespace cv;
 using namespace cv::ml;
 using namespace std;
 
-HogSvmDetector::HogSvmDetector(string window): ObjectDetector(window) {
-}
-
 HogSvmDetector::HogSvmDetector(DetectorParams params): ObjectDetector(params) {
-    setParams(params);
-    reset();
-}
-
-HogSvmDetector::HogSvmDetector(string window, DetectorParams params): ObjectDetector(window, params) {
     setParams(params);
     reset();
 }

@@ -7,16 +7,7 @@
 
 #include "objectdetectors/cascadedetector.h"
 
-CascadeDetector::CascadeDetector(string window): ObjectDetector(window) {
-    reset();
-}
-
 CascadeDetector::CascadeDetector(DetectorParams params): ObjectDetector(params) {
-    setParams(params);
-    reset();
-}
-
-CascadeDetector::CascadeDetector(string window, DetectorParams params): ObjectDetector(window, params) {
     setParams(params);
     reset();
 }

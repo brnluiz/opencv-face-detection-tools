@@ -23,7 +23,8 @@ SOURCES += \
     objectdetectors/cascadedetector.cpp \
     objectdetectors/hogsvmdetector.cpp \
     objectdetectors/objectdetector.cpp \
-    measurementtools/measuredistancetool.cpp
+    measurementtools/measuredistancetool.cpp \
+    gui/viewer.cpp
 
 HEADERS += \
     factories/sourcehandlerfactory.h \
@@ -34,7 +35,8 @@ HEADERS += \
     objectdetectors/objectdetector.h \
     objectdetectors/hogsvmdetector.h \
     objectdetectors/cascadedetector.h \
-    measurementtools/measuredistancetool.h
+    measurementtools/measuredistancetool.h \
+    gui/viewer.h
 
 unix {
     target.path = /usr/lib
