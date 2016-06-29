@@ -7,7 +7,7 @@
 #include <algorithm>
 #include <stdexcept>
 
-#include "objectdetectors/hogsvmdetector.h"
+#include "hogsvmdetector.h"
 
 #ifndef max
 #define max(a,b)            (((a) > (b)) ? (a) : (b))

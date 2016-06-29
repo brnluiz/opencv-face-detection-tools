@@ -4,8 +4,8 @@
 
 #include "gui/viewer.h"
 #include "measurementtools/measuredistancetool.h"
-#include "factories/sourcehandlerfactory.h"
-#include "factories/objectdetectorfactory.h"
+#include "sourcehandlers/sourcehandlerfactory.h"
+#include "objectdetectors/objectdetectorfactory.h"
 
 #define KNOWN_DISTANCE    100.0
 #define KNOWN_WIDTH       17.0
@@ -42,16 +42,16 @@ int main(int argc, char** argv) {
         }
 
         // Configure the source handler and load the source
-        SourceHandlerFactory sourceFactory;
-        shared_ptr<SourceHandler> source(sourceFactory.make(src));
+        SourceHandlerFactory source_factory;
+        shared_ptr<SourceHandler> source(source_factory.make(src));
 
         // Open the config file
         FileStorage fs;
         fs.open(config, FileStorage::READ);
 
         // Init the ObjectDetector
-        ObjectDetectorFactory detectorFactory;
-        shared_ptr<ObjectDetector> detector(detectorFactory.make(type, fs));
+        ObjectDetectorFactory detector_factory;
+        shared_ptr<ObjectDetector> detector(detector_factory.make(type, fs));
 
         // Calculate the focal length depending on the parameters
         MeasureDistanceTool distance(KNOWN_DISTANCE, KNOWN_WIDTH, KNOWN_WIDTH_PIXEL);
@@ -72,9 +72,8 @@ int main(int argc, char** argv) {
             // Detect the face
             Objects detections = detector->detect(frame);
 
-            // Show the face for the user
+            // Draw the face on the results window
             window.draw(detections);
-            window.show();
 
             // Measure the distance of the detected face to the source
             if(detections.size() >= 1 && counter == 0) {
@@ -92,6 +91,9 @@ int main(int argc, char** argv) {
                 cout << "Distance: " << distance.get(face) << endl;
                 cout << "###" << endl;
             }
+
+            // Show the results window
+            window.show();
 
             // Counter for periodic tasks
             counter++;

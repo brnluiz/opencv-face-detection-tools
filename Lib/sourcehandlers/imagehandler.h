@@ -4,7 +4,7 @@
 #include <opencv2/core/core.hpp>
 #include <string>
 
-#include "sourcehandlers/sourcehandler.h"
+#include "sourcehandler.h"
 
 using namespace std;
 using namespace cv;

@@ -5,7 +5,7 @@
 #include <opencv2/highgui.hpp>
 #include <string>
 
-#include "sourcehandlers/sourcehandler.h"
+#include "sourcehandler.h"
 
 using namespace cv;
 using namespace std;

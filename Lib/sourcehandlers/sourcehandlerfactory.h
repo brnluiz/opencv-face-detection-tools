@@ -3,10 +3,9 @@
 
 #include <string>
 
-#include "sourcehandlers/camhandler.h"
-#include "sourcehandlers/imagehandler.h"
-#include "sourcehandlers/sourcehandler.h"
-
+#include "camhandler.h"
+#include "imagehandler.h"
+#include "sourcehandler.h"
 
 using namespace std;
 

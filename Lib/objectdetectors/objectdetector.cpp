@@ -1,6 +1,6 @@
 #include <stdexcept>
 
-#include "objectdetectors/objectdetector.h"
+#include "objectdetector.h"
 
 ObjectDetector::ObjectDetector(DetectorParams params): params_(params) {
 }

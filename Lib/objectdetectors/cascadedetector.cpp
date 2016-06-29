@@ -5,7 +5,7 @@
 #include <string>
 #include <stdexcept>
 
-#include "objectdetectors/cascadedetector.h"
+#include "cascadedetector.h"
 
 CascadeDetector::CascadeDetector(DetectorParams params): ObjectDetector(params) {
     setParams(params);

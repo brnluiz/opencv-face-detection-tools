@@ -18,14 +18,16 @@ LIBS += -L/usr/local/lib -lopencv_shape -lopencv_stitching -lopencv_objdetect -l
 LIBS += -L$$OUT_PWD/../Lib/ -lfacedetection
 
 HEADERS += \
-    factories/sourcehandlerfactory.h \
-    factories/objectdetectorfactory.h \
+    sourcehandlers/sourcehandlerfactory.h \
     sourcehandlers/sourcehandler.h \
     sourcehandlers/imagehandler.h \
     sourcehandlers/camhandler.h \
+    objectdetectors/objectdetectorfactory.h \
     objectdetectors/objectdetector.h \
     objectdetectors/hogsvmdetector.h \
     objectdetectors/cascadedetector.h \
+    measurementtools/measuredistancetool.h \
+    gui/viewer.h
 
 SOURCES += \
     sandbox.cpp

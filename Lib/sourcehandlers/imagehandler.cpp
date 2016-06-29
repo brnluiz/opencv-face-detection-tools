@@ -3,8 +3,8 @@
 #include <string>
 #include <stdexcept>
 
-#include "sourcehandlers/sourcehandler.h"
-#include "sourcehandlers/imagehandler.h"
+#include "sourcehandler.h"
+#include "imagehandler.h"
 
 using namespace std;
 using namespace cv;

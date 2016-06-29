@@ -10,34 +10,17 @@ using namespace cv;
 
 class Viewer {
 public:
-    Viewer(string name) {
-        window_ = name;
-        namedWindow( window_, WINDOW_NORMAL );
-    }
+    Viewer(string name);
 
-    void setFrame(Mat frame) {
-        frame_ = frame;
-        canvas_ = frame;
-    }
+    void setFrame(Mat frame);
 
-    void draw(vector<Rect> rois, Scalar color = Scalar(0, 255, 0)) {
-        vector<Rect>::iterator it;
-        for(it = rois.begin(); it < rois.end(); it++) {
-            rectangle(canvas_, (*it), color, 3);
-        }
-    }
+    void draw(vector<Rect> rois, Scalar color = Scalar(0, 255, 0));
 
-    void show() {
-        imshow(window_, canvas_);
-    }
+    void show();
 
-    void reset() {
-        canvas_ = frame_;
-    }
+    void reset();
 
-    void save(string path) {
-        imwrite(path, canvas_);
-    }
+    void save(string path);
 
 private:
     Mat frame_;

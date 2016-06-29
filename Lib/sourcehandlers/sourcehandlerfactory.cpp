@@ -1,10 +1,10 @@
 #include <string>
 #include <stdexcept>
 
-#include "sourcehandlers/camhandler.h"
-#include "sourcehandlers/imagehandler.h"
-#include "sourcehandlers/sourcehandler.h"
-#include "factories/sourcehandlerfactory.h"
+#include "sourcehandlerfactory.h"
+#include "camhandler.h"
+#include "imagehandler.h"
+#include "sourcehandler.h"
 
 using namespace std;
 

@@ -3,9 +3,9 @@
 
 #include <string>
 
-#include "objectdetectors/objectdetector.h"
-#include "objectdetectors/cascadedetector.h"
-#include "objectdetectors/hogsvmdetector.h"
+#include "objectdetector.h"
+#include "cascadedetector.h"
+#include "hogsvmdetector.h"
 
 using namespace std;
 

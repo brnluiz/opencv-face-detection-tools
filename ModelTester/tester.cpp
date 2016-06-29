@@ -6,8 +6,8 @@
 #include <vector>
 #include <memory>
 
-#include "factories/sourcehandlerfactory.h"
-#include "factories/objectdetectorfactory.h"
+#include "sourcehandlers/sourcehandlerfactory.h"
+#include "objectdetectors/objectdetectorfactory.h"
 
 using namespace std;
 using namespace cv;

@@ -5,7 +5,7 @@
 #include <opencv2/objdetect.hpp>
 #include <vector>
 
-#include "objectdetectors/objectdetector.h"
+#include "objectdetector.h"
 
 using namespace std;
 using namespace cv;
