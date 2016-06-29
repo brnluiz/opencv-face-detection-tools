@@ -63,40 +63,7 @@ int main(int argc, char** argv) {
         // Start processing
         cout << "Press ESC to stop processing task" << endl;
         while(!source->isFinished()) {
-            // Get the actual frame
-            Mat frame = source->get();
-
-            // Save it to the viewer window (it will be used to draw the results on it)
-            window.setFrame(frame);
-
-            // Detect the face
-            Objects detections = detector->detect(frame);
-
-            // Draw the face on the results window
-            window.draw(detections);
-
-            // Measure the distance of the detected face to the source
-            if(detections.size() >= 1 && counter == 0) {
-                Rect face = detections[0];
-
-                if (detections.size() > 1) {
-                    for(Objects::iterator it = detections.begin(); it < detections.end(); it++) {
-                        if ((*it).size().area() > face.size().area()) {
-                            face = (*it);
-                        }
-                    }
-                }
-
-                cout << face.size().width << "x" << face.size().height << endl;
-                cout << "Distance: " << distance.get(face) << endl;
-                cout << "###" << endl;
-            }
-
-            // Show the results window
-            window.show();
-
             // Counter for periodic tasks
-            counter++;
             if (counter > INTERVAL_COUNTER) {
                 counter = 0;
             }
@@ -106,6 +73,51 @@ int main(int argc, char** argv) {
                 cout << "Stopping processing task..." << endl;
                 break;
             }
+
+            // Get the actual frame
+            Mat frame = source->get();
+
+            // Save it to the viewer window (it will be used to draw the results on it)
+            window.setFrame(frame);
+
+            // Detect the face
+            Objects detections = detector->detect(frame);
+
+            // If nothing was detected, update the window frame and then continue the loop
+            if(detections.size() == 0) {
+                window.show();
+                continue;
+            }
+
+            // Draw the detections on the results window
+            window.draw(detections);
+
+            // Detect the biggest available ROI
+            Rect face = detections[0];
+            if (detections.size() > 1) {
+                for(Objects::iterator it = detections.begin(); it < detections.end(); it++) {
+                    if ((*it).size().area() > face.size().area()) {
+                        face = (*it);
+                    }
+                }
+            }
+
+            // Draw the selected ROI on a blue square (to differentiate from the other detections)
+            vector<Rect> real;
+            real.push_back(face);
+            window.draw(real, Scalar(255, 0, 0));
+
+            // Output information about the ROI
+            cout << face.size().width << "x" << face.size().height << endl;
+
+            // Output the distance of the detected face to the source
+            cout << "Distance from the source: " << distance.get(face) << endl;
+            cout << "###" << endl;
+
+            // Show the results window
+            window.show();
+
+            counter++;
         }
 
         cout << "Processing task finished" << endl;
