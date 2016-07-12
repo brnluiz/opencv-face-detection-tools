@@ -7,9 +7,12 @@
 #include "sourcehandlers/sourcehandlerfactory.h"
 #include "objectdetectors/objectdetectorfactory.h"
 
-#define KNOWN_DISTANCE    100.0
+//#define KNOWN_DISTANCE    100.0
+//#define KNOWN_WIDTH       17.0
+//#define KNOWN_WIDTH_PIXEL 2080
+#define KNOWN_DISTANCE    50
 #define KNOWN_WIDTH       17.0
-#define KNOWN_WIDTH_PIXEL 2080
+#define KNOWN_WIDTH_PIXEL 190
 #define INTERVAL_COUNTER  10
 
 using namespace std;
@@ -55,7 +58,6 @@ int main(int argc, char** argv) {
 
         // Calculate the focal length depending on the parameters
         MeasureDistanceTool distance(KNOWN_DISTANCE, KNOWN_WIDTH, KNOWN_WIDTH_PIXEL);
-        int counter = 0;
 
         // Start a Window
         Viewer window("FaceDectection Sandbox");
@@ -63,11 +65,6 @@ int main(int argc, char** argv) {
         // Start processing
         cout << "Press ESC to stop processing task" << endl;
         while(!source->isFinished()) {
-            // Counter for periodic tasks
-            if (counter > INTERVAL_COUNTER) {
-                counter = 0;
-            }
-
             // Stop processing if ESC is pressed
             if (waitKey(1) == 27) {
                 cout << "Stopping processing task..." << endl;
@@ -111,13 +108,11 @@ int main(int argc, char** argv) {
             cout << face.size().width << "x" << face.size().height << endl;
 
             // Output the distance of the detected face to the source
-            cout << "Distance from the source: " << distance.get(face) << endl;
+            cout << "Distance from the source: " << distance.get(face) << "cm" << endl;
             cout << "###" << endl;
 
             // Show the results window
             window.show();
-
-            counter++;
         }
 
         cout << "Processing task finished" << endl;
