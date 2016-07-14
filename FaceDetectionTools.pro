@@ -4,6 +4,7 @@ SUBDIRS += \
     Lib \
     ModelTester \
     Sandbox \
-    TrainHog
+    TrainHog \
+    TrainHogCrossValidation
 
 CONFIG += ordered
