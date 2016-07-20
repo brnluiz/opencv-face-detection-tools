@@ -30,7 +30,7 @@ public:
             throw runtime_error("With this value of k (="+to_string(k)+")Equal division of the data is not possible");
         }
 
-        //        random_shuffle(whichFoldToGo.begin(), whichFoldToGo.end());
+        random_shuffle(whichFoldToGo.begin(), whichFoldToGo.end());
     }
 
     template<class Out>

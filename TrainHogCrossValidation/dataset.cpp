@@ -5,6 +5,7 @@
 #include <string>
 
 #include "dataset.h"
+#include "log.h"
 
 using namespace std;
 
@@ -18,7 +19,7 @@ void DataSet::loadImages(const string &prefix, const string &filename) {
 
     file.open( (prefix+filename).c_str() );
     if( !file.is_open() ) {
-        cerr << "Unable to open the list of images from " << filename << " filename." << endl;
+        DATA_LOG << "Unable to open the list of images from " << filename << " filename." << endl;
         exit( -1 );
     }
 

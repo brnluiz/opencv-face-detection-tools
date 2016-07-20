@@ -20,9 +20,20 @@ SOURCES += \
     dataset.cpp \
     negdataset.cpp \
     kfold.cpp \
-    train.cpp
+    hogtrain.cpp \
+    stats.cpp \
+    trainer.cpp \
+    svmtrain.cpp \
+    train_main.cpp \
+    generaltrain.cpp
 
 HEADERS += \
     dataset.h \
     negdataset.h \
-    kfold.h
+    kfold.h \
+    hogtrain.h \
+    stats.h \
+    trainer.h \
+    svmtrain.h \
+    generaltrain.h \
+    log.h
