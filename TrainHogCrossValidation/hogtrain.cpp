@@ -16,15 +16,41 @@ void HogTrain::run() {
         HOGDescriptor hog = makeDescriptor(params_[i]);
 
         // Prepare pos and negatives samples
-        Kfold<vector<SampleInfo>::const_iterator> kf = prepareSamples(pos_, neg_, hog);
-//        vector<SampleInfo> samples;
+//        Kfold<vector<SampleInfo>::const_iterator> kf = prepareSamples(pos_, neg_, hog);
+        vector<SampleInfo> samples;
 
-//        TRAIN_LOG << "Starting HOG computing..." << endl;
-//        for (vector<Mat>::iterator img = pos_.begin(); img < pos_.end(); img++) computeMultipleHog(*img, +1, hog, samples);
-//        for (vector<Mat>::iterator img = neg_.begin(); img < neg_.end(); img++) computeMultipleHog(*img, -1, hog, samples);
-//        TRAIN_LOG << "Finished HOG computing" << endl;
+        TRAIN_LOG << "Starting HOG computing..." << endl;
+        for (vector<Mat>::iterator img = pos_.begin(); img < pos_.end(); img++) {
+            Trainer trainer;
+            SampleInfo s;
 
-//        Kfold<vector<SampleInfo>::const_iterator> kf(5, samples.begin(), samples.end());
+            // Compute the HOG (normal image)
+            s.image = (*img).clone();
+            s.hog = Mat(trainer.computeHog(s.image, hog));
+            s.type = +1;
+            samples.push_back(s);
+
+            // Get the flipped version as well
+            s.hog = Mat(trainer.computeHog(s.image, hog, true));
+            samples.push_back(s);
+        }
+        for (vector<Mat>::iterator img = neg_.begin(); img < neg_.end(); img++) {
+            Trainer trainer;
+            SampleInfo s;
+
+            // Compute the HOG (normal image)
+            s.image = (*img).clone();
+            s.hog = Mat(trainer.computeHog(s.image, hog));
+            s.type = -1;
+            samples.push_back(s);
+
+            // Get the flipped version as well
+            s.hog = Mat(trainer.computeHog(s.image, hog, true));
+            samples.push_back(s);
+        }
+        TRAIN_LOG << "Finished HOG computing" << endl;
+
+        Kfold<vector<SampleInfo>::const_iterator> kf(folds_, samples.begin(), samples.end());
 
         // Cross-validation
         float acc;
@@ -49,7 +75,8 @@ void HogTrain::run() {
 
             // Train a SVM using the actual HOGs
             HOGTRAIN_LOG << "Training SVM on fold #" << fold+1 << endl;
-            Ptr<SVM> svm = trainer.trainSvm(gradient_lst, labels);
+            Ptr<SVM> svm = SVM::create();
+            trainer.trainSvm(gradient_lst, labels, svm);
 
             // Configure the detector to use the trained SVM
             vector<float> detector = trainer.getSvmDetector(svm);

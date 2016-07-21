@@ -18,7 +18,7 @@ public:
 
     void trainSvm(const vector<Mat>& gradient_lst, const vector<int>& labels, string model_file);
 
-    Ptr<SVM> trainSvm(const vector<Mat>& gradient_lst, const vector<int>& labels, bool automatic = false);
+    void trainSvm(const vector<Mat>& gradient_lst, const vector<int>& labels, Ptr<SVM> &svm, bool automatic = false);
 
 private:
     /*

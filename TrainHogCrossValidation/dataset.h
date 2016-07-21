@@ -14,7 +14,7 @@ public:
 
     void loadImages(const string & prefix, const string & filename);
 
-    vector<Mat> & get();
+    vector<Mat> get();
 
 protected:
     vector<Mat> img_lst_;

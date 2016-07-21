@@ -24,27 +24,30 @@ void print_vector(vector<T> & v) {
 int main() {
     // HOG Parameters (which will be combined and tested)
     vector<vector<int>> params = {
-        {4, 8},    // Block size
-        {4, 8},    // Cell size
-        {4, 8}, // Block stride
+        {8, 16},    // Block size
+        {8},    // Cell size
+        {8}, // Block stride
         {32},          // Win size
     };
 
     MAIN_LOG << "Loading images sets..." << endl;
     DataSet    pos_set("/home/brunoluiz/qt/FaceDetectionTools/builds/release/linux/x86/TrainHog/", "caltech.lst");
     NegDataSet neg_set("/home/brunoluiz/qt/FaceDetectionTools/builds/release/linux/x86/TrainHog/", "neg.lst", Size(32,32));
+    vector<Mat> pos = pos_set.get();
+    vector<Mat> neg = pos_set.get();
     MAIN_LOG << "Finished loading!" << endl;
 
     MAIN_LOG << "Starting process..." << endl;
 
     MAIN_LOG << "- First step: choosing the best HOG parameters" << endl;
-    HogTrain hog_train(pos_set.get(), neg_set.get(), params);
+    HogTrain hog_train(pos, neg, params);
+    hog_train.setFolds(5);
     hog_train.run();
     HogBest hog_best = hog_train.getBest();
     hog_best.print();
 
     MAIN_LOG << "- Second step: choosing best SVM parameters" << endl;
-    SvmTrain svm_train(pos_set.get(), neg_set.get(), hog_best.descriptor);
+    SvmTrain svm_train(pos, neg, hog_best.descriptor);
     svm_train.run();
     Ptr<SVM> svm = svm_train.getBest();
     svm->save("best-svm.xml");

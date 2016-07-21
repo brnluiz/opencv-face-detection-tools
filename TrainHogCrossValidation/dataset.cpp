@@ -43,6 +43,6 @@ void DataSet::loadImages(const string &prefix, const string &filename) {
     }
 }
 
-vector<Mat> &DataSet::get() {
+vector<Mat> DataSet::get() {
     return img_lst_;
 }

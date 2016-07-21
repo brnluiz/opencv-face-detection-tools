@@ -52,7 +52,7 @@ Kfold<vector<SampleInfo>::const_iterator> GeneralTrain::prepareSamples(vector<Ma
     TRAIN_LOG << "Finished HOG computing" << endl;
     TRAIN_LOG << "Samples size: " << samples.size() << endl;
 
-    Kfold<vector<SampleInfo>::const_iterator> kf(10, samples.begin(), samples.end());
+    Kfold<vector<SampleInfo>::const_iterator> kf(folds_, samples.begin(), samples.end());
 
     return kf;
 }
