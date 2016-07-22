@@ -34,7 +34,7 @@ int main() {
     DataSet    pos_set("/home/brunoluiz/qt/FaceDetectionTools/builds/release/linux/x86/TrainHog/", "caltech.lst");
     NegDataSet neg_set("/home/brunoluiz/qt/FaceDetectionTools/builds/release/linux/x86/TrainHog/", "neg.lst", Size(32,32));
     vector<Mat> pos = pos_set.get();
-    vector<Mat> neg = pos_set.get();
+    vector<Mat> neg = neg_set.get();
     MAIN_LOG << "Finished loading!" << endl;
 
     MAIN_LOG << "Starting process..." << endl;
