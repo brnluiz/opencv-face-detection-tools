@@ -16,61 +16,26 @@ void HogTrain::run() {
         HOGDescriptor hog = makeDescriptor(params_[i]);
 
         // Prepare pos and negatives samples
-//        Kfold<vector<SampleInfo>::const_iterator> kf = prepareSamples(pos_, neg_, hog);
-        vector<SampleInfo> samples;
-
-        TRAIN_LOG << "Starting HOG computing..." << endl;
-        for (vector<Mat>::iterator img = pos_.begin(); img < pos_.end(); img++) {
-            Trainer trainer;
-            SampleInfo s;
-
-            // Compute the HOG (normal image)
-            s.image = (*img).clone();
-            s.hog = Mat(trainer.computeHog(s.image, hog));
-            s.type = +1;
-            samples.push_back(s);
-
-            // Get the flipped version as well
-            s.hog = Mat(trainer.computeHog(s.image, hog, true));
-            samples.push_back(s);
-        }
-        for (vector<Mat>::iterator img = neg_.begin(); img < neg_.end(); img++) {
-            Trainer trainer;
-            SampleInfo s;
-
-            // Compute the HOG (normal image)
-            s.image = (*img).clone();
-            s.hog = Mat(trainer.computeHog(s.image, hog));
-            s.type = -1;
-            samples.push_back(s);
-
-            // Get the flipped version as well
-            s.hog = Mat(trainer.computeHog(s.image, hog, true));
-            samples.push_back(s);
-        }
-        TRAIN_LOG << "Finished HOG computing" << endl;
-
-        Kfold<vector<SampleInfo>::const_iterator> kf(folds_, samples.begin(), samples.end());
+        Kfold<vector<Mat>::const_iterator> kf_pos(folds_, pos_.begin(), pos_.end());
+        Kfold<vector<Mat>::const_iterator> kf_neg(folds_, neg_.begin(), neg_.end());
 
         // Cross-validation
         float acc;
         for (int fold = 0; fold != folds_; fold++) {
-
             HOGTRAIN_LOG << "Training Fold #" << fold+1 << endl;
 
             // Get the k fold
-            vector<SampleInfo> train_data;
-            vector<SampleInfo> test_data;
-            kf.getFold(fold + 1, back_inserter(train_data), back_inserter(test_data));
+            vector<Mat> train_pos, test_pos;
+            vector<Mat> train_neg, test_neg;
+            kf_pos.getFold(fold + 1, back_inserter(train_pos), back_inserter(test_pos));
+            kf_neg.getFold(fold + 1, back_inserter(train_neg), back_inserter(test_neg));
 
-            // Allocate the SVM parameters (labels)
+            // Allocate the SVM parameters (labels and HOG)
             HOGTRAIN_LOG << "Preparing SVM parameters on fold #" << fold+1 << endl;
             vector<int> labels;
             vector<Mat> gradient_lst;
-            for(vector<SampleInfo>::iterator it = train_data.begin(); it < train_data.end(); it++) {
-                gradient_lst.push_back((*it).hog);
-                labels.push_back((*it).type);
-            }
+            trainer.computeHogList(train_pos, gradient_lst, labels, hog, +1);
+            trainer.computeHogList(train_neg, gradient_lst, labels, hog, -1);
 
             // Train a SVM using the actual HOGs
             HOGTRAIN_LOG << "Training SVM on fold #" << fold+1 << endl;
@@ -83,8 +48,8 @@ void HogTrain::run() {
 
             // Test the actual setting using the test set
             HOGTRAIN_LOG << "Testing Fold #" << fold+1 << endl;
-            Stats stat(hog);
-            stat.test(test_data);
+            Stats stat(hog, test_pos, test_neg);
+            stat.test();
 
             // Save the accuracy
             acc += stat.get_accuracy();
