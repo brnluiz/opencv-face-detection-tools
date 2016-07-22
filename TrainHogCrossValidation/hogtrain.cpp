@@ -55,7 +55,6 @@ void HogTrain::run() {
         // Cross-validation
         float acc;
         for (int fold = 0; fold != folds_; fold++) {
-            Stats stat;
 
             HOGTRAIN_LOG << "Training Fold #" << fold+1 << endl;
 
@@ -84,7 +83,8 @@ void HogTrain::run() {
 
             // Test the actual setting using the test set
             HOGTRAIN_LOG << "Testing Fold #" << fold+1 << endl;
-            stat.test(test_data, hog);
+            Stats stat(hog);
+            stat.test(test_data);
 
             // Save the accuracy
             acc += stat.get_accuracy();
