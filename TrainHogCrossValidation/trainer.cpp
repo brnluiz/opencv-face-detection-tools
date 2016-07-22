@@ -24,7 +24,7 @@ vector<float> Trainer::getSvmDetector(const Ptr<SVM> &svm) {
     return hog_detector;
 }
 
-vector<Mat> Trainer::computeHog(const vector<Mat> &img_lst, HOGDescriptor hog) {
+vector<Mat> Trainer::computeHogList(const vector<Mat> &img_lst, HOGDescriptor hog) {
     // Output variable
     vector<Mat> gradient_lst;
 
@@ -98,13 +98,14 @@ void Trainer::trainSvm(const vector<Mat> &gradient_lst, const vector<int> &label
         svm->setCoef0(0.0);
         svm->setDegree(3);
         svm->setTermCriteria(TermCriteria( CV_TERMCRIT_ITER+CV_TERMCRIT_EPS, 1000, 1e-6 ));
-        svm->setGamma(0);
+        svm->setGamma(0.1);
         svm->setKernel(SVM::LINEAR);
         svm->setNu(0.5);
         svm->setP(0.1); // for EPSILON_SVR, epsilon in loss function?
         svm->setC(0.01); // From paper, soft classifier
         svm->setType(SVM::EPS_SVR); // C_SVC; // EPSILON_SVR; // may be also NU_SVR; // do regression task
         svm->train(train);
+        return ;
 //        return svm;
     }
 
