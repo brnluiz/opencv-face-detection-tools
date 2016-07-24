@@ -62,6 +62,10 @@ protected:
     void computeMultipleHog(Mat img, int type, const HOGDescriptor &hog, vector<SampleInfo>& samples);
 
     Kfold<vector<SampleInfo>::const_iterator> prepareSamples(vector<Mat> &pos, vector<Mat> &neg, const HOGDescriptor& hog);
+
+    vector<SampleInfo> prepareSamples(const vector<Mat> &set, const HOGDescriptor& hog, const int& type);
+
+    void prepareSvmParameters(vector<Mat>& gradient_lst, vector<int>& labels, const vector<SampleInfo>& pos, const vector<SampleInfo>& neg);
 };
 
 #endif // GENERALTRAIN_H

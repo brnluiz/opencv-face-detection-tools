@@ -12,7 +12,7 @@ class Trainer {
 public:
     vector<float> getSvmDetector(const Ptr<SVM>& svm);
 
-    vector<float> computeHog(Mat img, HOGDescriptor hog, bool do_flip = false);
+    Mat computeHog(Mat img, HOGDescriptor hog, bool do_flip = false);
 
     vector<Mat> computeHogList(const vector<Mat>& img_lst, HOGDescriptor hog);
 

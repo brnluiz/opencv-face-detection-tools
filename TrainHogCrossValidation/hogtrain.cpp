@@ -16,17 +16,20 @@ void HogTrain::run() {
         HOGDescriptor hog = makeDescriptor(params_[i]);
 
         // Prepare pos and negatives samples
-        Kfold<vector<Mat>::const_iterator> kf_pos(folds_, pos_.begin(), pos_.end());
-        Kfold<vector<Mat>::const_iterator> kf_neg(folds_, neg_.begin(), neg_.end());
+        vector<SampleInfo> pos_set = prepareSamples(pos_, hog, +1);
+        vector<SampleInfo> neg_set = prepareSamples(neg_, hog, -1);
+
+        Kfold<vector<SampleInfo>::const_iterator> kf_pos(folds_, pos_set.begin(), pos_set.end());
+        Kfold<vector<SampleInfo>::const_iterator> kf_neg(folds_, neg_set.begin(), neg_set.end());
 
         // Cross-validation
         float acc;
         for (int fold = 0; fold != folds_; fold++) {
             HOGTRAIN_LOG << "Training Fold #" << fold+1 << endl;
 
-            // Get the k fold
-            vector<Mat> train_pos, test_pos;
-            vector<Mat> train_neg, test_neg;
+            // Get the k fold for both sets (training and testing)
+            vector<SampleInfo> train_pos, test_pos;
+            vector<SampleInfo> train_neg, test_neg;
             kf_pos.getFold(fold + 1, back_inserter(train_pos), back_inserter(test_pos));
             kf_neg.getFold(fold + 1, back_inserter(train_neg), back_inserter(test_neg));
 
@@ -34,8 +37,7 @@ void HogTrain::run() {
             HOGTRAIN_LOG << "Preparing SVM parameters on fold #" << fold+1 << endl;
             vector<int> labels;
             vector<Mat> gradient_lst;
-            trainer.computeHogList(train_pos, gradient_lst, labels, hog, +1);
-            trainer.computeHogList(train_neg, gradient_lst, labels, hog, -1);
+            prepareSvmParameters(gradient_lst, labels, train_pos, train_neg);
 
             // Train a SVM using the actual HOGs
             HOGTRAIN_LOG << "Training SVM on fold #" << fold+1 << endl;
@@ -54,7 +56,7 @@ void HogTrain::run() {
             // Save the accuracy
             acc += stat.get_accuracy();
 
-            HOGTRAIN_LOG << "Accuracy of fold #" << fold+1 << ": " << acc << endl;
+            HOGTRAIN_LOG << "Accuracy of fold #" << fold+1 << ": " << stat.get_accuracy() << endl;
         }
 
         // If the average accuracy is better than the last parameter set, then save it

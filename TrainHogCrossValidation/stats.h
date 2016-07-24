@@ -26,6 +26,20 @@ public:
         ;
     }
 
+    Stats(const HOGDescriptor& hog, const vector<SampleInfo>& pos, const vector<SampleInfo>& neg):
+        positives(0), negatives(0), false_positives(0), false_negatives(0), hog_(hog) {
+
+        vector<SampleInfo>::const_iterator info;
+        for(info = pos.begin(); info < pos.end(); info++) {
+            pos_.push_back((*info).image);
+        }
+
+        for(info = neg.begin(); info < neg.end(); info++) {
+            neg_.push_back((*info).image);
+        }
+
+    }
+
     float get_accuracy() {
         return (float)(positives + negatives) /
                 (float)(positives + negatives + false_positives + false_negatives);

@@ -41,7 +41,7 @@ int main() {
 
     MAIN_LOG << "- First step: choosing the best HOG parameters" << endl;
     HogTrain hog_train(pos, neg, params);
-    hog_train.setFolds(5);
+    hog_train.setFolds(10);
     hog_train.run();
     HogBest hog_best = hog_train.getBest();
     hog_best.print();

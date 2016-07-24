@@ -19,7 +19,7 @@ HOGDescriptor GeneralTrain::makeDescriptor(HogParam &params) {
     return hog;
 }
 
-void GeneralTrain:: computeMultipleHog(Mat img, int type, const HOGDescriptor &hog, vector<SampleInfo>& samples) {
+void GeneralTrain::computeMultipleHog(Mat img, int type, const HOGDescriptor &hog, vector<SampleInfo>& samples) {
     Trainer trainer;
     SampleInfo s;
 
@@ -55,4 +55,38 @@ Kfold<vector<SampleInfo>::const_iterator> GeneralTrain::prepareSamples(vector<Ma
     Kfold<vector<SampleInfo>::const_iterator> kf(folds_, samples.begin(), samples.end());
 
     return kf;
+}
+
+vector<SampleInfo> GeneralTrain::prepareSamples(const vector<Mat> &set, const HOGDescriptor &hog, const int &type) {
+    Trainer trainer;
+
+    vector<SampleInfo> samples;
+    for(vector<Mat>::const_iterator img = set.begin(); img < set.end(); img++) {
+        SampleInfo s;
+        s.image = (*img).clone();
+        s.type = type;
+
+        // Normal, not flipped
+        s.hog = trainer.computeHog(s.image, hog, false).clone();
+        samples.push_back(s);
+
+        // Normal, flipped
+        s.hog = trainer.computeHog(s.image, hog, false).clone();
+        samples.push_back(s);
+    }
+
+    return samples;
+}
+
+void GeneralTrain::prepareSvmParameters(vector<Mat>& gradient_lst, vector<int>& labels, const vector<SampleInfo>& pos, const vector<SampleInfo>& neg) {
+    vector<SampleInfo>::const_iterator info;
+    for(info = pos.begin(); info < pos.end(); info++) {
+        gradient_lst.push_back((*info).hog.clone());
+        labels.push_back((*info).type);
+    }
+
+    for(info = neg.begin(); info < neg.end(); info++) {
+        gradient_lst.push_back((*info).hog.clone());
+        labels.push_back((*info).type);
+    }
 }

@@ -46,7 +46,7 @@ vector<Mat> Trainer::computeHogList(const vector<Mat> &img_lst, HOGDescriptor ho
     return gradient_lst;
 }
 
-vector<float> Trainer::computeHog(Mat img, HOGDescriptor hog, bool do_flip) {
+Mat Trainer::computeHog(Mat img, HOGDescriptor hog, bool do_flip) {
     Mat gray;
     vector<float> descriptors;
 
@@ -65,7 +65,7 @@ vector<float> Trainer::computeHog(Mat img, HOGDescriptor hog, bool do_flip) {
     // Compute HoG
     hog.compute(gray, descriptors, hog.blockStride);
 
-    return descriptors;
+    return Mat(descriptors);
 }
 
 void Trainer::trainSvm(const vector<Mat> &gradient_lst, const vector<int> &labels, string model_file) {
