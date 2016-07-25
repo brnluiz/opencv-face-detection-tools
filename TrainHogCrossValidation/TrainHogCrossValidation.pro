@@ -18,22 +18,20 @@ LIBS += -L$$OUT_PWD/../Lib/ -lfacedetection
 
 SOURCES += \
     dataset.cpp \
-    negdataset.cpp \
     kfold.cpp \
-    hogtrain.cpp \
     stats.cpp \
     trainer.cpp \
-    svmtrain.cpp \
-    train_main.cpp \
-    generaltrain.cpp
+    train_abstract.cpp \
+    train_svm.cpp \
+    train_hog.cpp \
+    gen_best_model.cpp
 
 HEADERS += \
     dataset.h \
-    negdataset.h \
     kfold.h \
-    hogtrain.h \
     stats.h \
     trainer.h \
-    svmtrain.h \
-    generaltrain.h \
-    log.h
+    log.h \
+    train_abstract.h \
+    train_svm.h \
+    train_hog.h

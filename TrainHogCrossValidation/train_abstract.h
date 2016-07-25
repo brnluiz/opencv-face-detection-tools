@@ -44,9 +44,9 @@ struct SampleInfo {
 };
 
 
-class GeneralTrain {
+class AbstractTrain {
 public:
-    GeneralTrain(vector<Mat>& pos, vector<Mat>& neg, int folds = 10);
+    AbstractTrain(vector<Mat>& pos, vector<Mat>& neg, int folds = 10);
 
     virtual void run() = 0;
 
@@ -57,7 +57,7 @@ protected:
     vector<Mat> neg_;
     int folds_;
 
-    HOGDescriptor makeDescriptor(HogParam& params);
+    HOGDescriptor makeDescriptor(const HogParam &params);
 
     void computeMultipleHog(Mat img, int type, const HOGDescriptor &hog, vector<SampleInfo>& samples);
 

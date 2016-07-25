@@ -24,29 +24,43 @@ vector<float> Trainer::getSvmDetector(const Ptr<SVM> &svm) {
     return hog_detector;
 }
 
-vector<Mat> Trainer::computeHogList(const vector<Mat> &img_lst, HOGDescriptor hog) {
+vector<Mat> Trainer::computeHogList(const vector<Mat> &input_lst, HOGDescriptor hog) {
     // Output variable
     vector<Mat> gradient_lst;
 
-    vector< Mat >::const_iterator img = img_lst.begin();
-    vector< Mat >::const_iterator end = img_lst.end();
-    for( ; img != end ; ++img ) {
+    for(vector<Mat>::const_iterator img = input_lst.begin(); img < input_lst.end(); img++) {
         vector<float> descriptors;
 
         // Compute HoG (normal image)
-        descriptors = computeHog(*img, hog);
+        descriptors = computeHog(*img, hog).clone();
         gradient_lst.push_back(Mat(descriptors).clone());
         descriptors.clear();
 
         // Compute HoG (flipped image)
-        descriptors = computeHog(*img, hog);
+        descriptors = computeHog(*img, hog, true).clone();
         gradient_lst.push_back(Mat(descriptors).clone());
     }
 
     return gradient_lst;
 }
 
-Mat Trainer::computeHog(Mat img, HOGDescriptor hog, bool do_flip) {
+void Trainer::computeHogList(const vector<Mat> &input_lst, vector<Mat> &output_lst, vector<int> &output_labels, HOGDescriptor hog, int type) {
+    for(vector<Mat>::const_iterator img = input_lst.begin(); img < input_lst.end(); img++) {
+        vector<float> descriptors;
+
+        // Compute HoG (normal image)
+        descriptors = computeHog(*img, hog).clone();
+        output_lst.push_back(Mat(descriptors).clone());
+        output_labels.push_back(type);
+
+        // Compute HoG (flipped image)
+        descriptors = computeHog(*img, hog, true).clone();
+        output_lst.push_back(Mat(descriptors).clone());
+        output_labels.push_back(type);
+    }
+}
+
+Mat Trainer::computeHog(const Mat& img, const HOGDescriptor& hog, bool do_flip) {
     Mat gray;
     vector<float> descriptors;
 
@@ -68,55 +82,41 @@ Mat Trainer::computeHog(Mat img, HOGDescriptor hog, bool do_flip) {
     return Mat(descriptors);
 }
 
-void Trainer::trainSvm(const vector<Mat> &gradient_lst, const vector<int> &labels, string model_file) {
-    Ptr<SVM> svm;
-//    svm = trainSvm(gradient_lst, labels);
-
-    svm->save(model_file);
-}
-
-void Trainer::trainSvm(const vector<Mat> &gradient_lst, const vector<int> &labels, Ptr<SVM>& svm, bool automatic) {
+Ptr<SVM> Trainer::trainSvm(const vector<Mat> &gradient_lst, const vector<int> &labels, bool automatic) {
 
     Mat train_data;
     convertToMl( gradient_lst, train_data );
     Ptr<TrainData> train = TrainData::create(train_data, SampleTypes::ROW_SAMPLE, Mat(labels));
 
-//    svm->setKernel(SVM::RBF);
-//    svm->setType(SVM::C_SVC); // C_SVC; // EPSILON_SVR; // may be also NU_SVR; // do regression task
-//    svm->setTermCriteria(TermCriteria(CV_TERMCRIT_ITER+CV_TERMCRIT_EPS, 1000, 1e-6 ));
+    Ptr<SVM> svm = SVM::create();
 
-//    /* Default values to train SVM */
-//    svm->setCoef0(0.0); //(POLY / SIGMOID)
-//    svm->setDegree(3); // (POLY)
-//    svm->setNu(0.5); // (NU_SVC / ONE_CLASS / NU_SVR)
-//    svm->setP(0.1); // (EPS_SVR)
+    svm->setKernel(SVM::LINEAR);
+    svm->setType(SVM::C_SVC); // C_SVC; // EPSILON_SVR; // may be also NU_SVR; // do regression task
+    svm->setTermCriteria(TermCriteria(CV_TERMCRIT_ITER+CV_TERMCRIT_EPS, 1000, 1e-6 ));
 
-//    svm->setC(0.01); // (C_SVC / EPS_SVR / NU_SVR)
-//    svm->setGamma(0.01); // (POLY / RBF / SIGMOID / CHI2)
+    /* Default values to train SVM */
+    svm->setCoef0(0.0); //(POLY / SIGMOID)
+    svm->setDegree(3); // (POLY)
+    svm->setNu(0.5); // (NU_SVC / ONE_CLASS / NU_SVR)
+    svm->setP(0.1); // (EPS_SVR)
+
+    svm->setC(0.01); // (C_SVC / EPS_SVR / NU_SVR)
+    svm->setGamma(0.01); // (POLY / RBF / SIGMOID / CHI2)
 
     if (!automatic) {
-        svm->setCoef0(0.0);
-        svm->setDegree(3);
-        svm->setTermCriteria(TermCriteria( CV_TERMCRIT_ITER+CV_TERMCRIT_EPS, 1000, 1e-6 ));
-        svm->setGamma(0.1);
-        svm->setKernel(SVM::LINEAR);
-        svm->setNu(0.5);
-        svm->setP(0.1); // for EPSILON_SVR, epsilon in loss function?
-        svm->setC(0.01); // From paper, soft classifier
-        svm->setType(SVM::EPS_SVR); // C_SVC; // EPSILON_SVR; // may be also NU_SVR; // do regression task
         svm->train(train);
-        return ;
-//        return svm;
+    } else {
+        svm->trainAuto(train, 10,
+                       SVM::getDefaultGrid(SVM::C),
+                       SVM::getDefaultGrid(SVM::GAMMA),
+                       SVM::getDefaultGrid(SVM::P),
+                       SVM::getDefaultGrid(SVM::NU),
+                       SVM::getDefaultGrid(SVM::COEF),
+                       SVM::getDefaultGrid(SVM::DEGREE),
+                       true);
     }
 
-    svm->trainAuto(train, 10,
-                   SVM::getDefaultGrid(SVM::C),
-                   SVM::getDefaultGrid(SVM::GAMMA),
-                   SVM::getDefaultGrid(SVM::P),
-                   SVM::getDefaultGrid(SVM::NU),
-                   SVM::getDefaultGrid(SVM::COEF),
-                   SVM::getDefaultGrid(SVM::DEGREE),
-                   true);
+    return svm;
 }
 
 void Trainer::convertToMl(const std::vector<Mat> &train_samples, Mat &trainData) {

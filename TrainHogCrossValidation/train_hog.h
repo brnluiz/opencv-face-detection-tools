@@ -4,17 +4,17 @@
 #include "stats.h"
 #include "trainer.h"
 #include "kfold.h"
-#include "generaltrain.h"
+#include "train_abstract.h"
 
 #include <vector>
 
 using namespace std;
 using namespace cv;
 
-class HogTrain: public GeneralTrain {
+class HogTrain: public AbstractTrain {
 public:
 
-    HogTrain(vector<Mat>& pos, vector<Mat>& neg, HogParamList params);
+    HogTrain(vector<Mat>& pos, vector<Mat>& neg, const int &folds, HogParamList params);
 
     void run();
 

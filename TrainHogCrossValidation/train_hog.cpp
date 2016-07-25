@@ -1,7 +1,7 @@
-#include "hogtrain.h"
+#include "train_hog.h"
 #include "log.h"
 
-HogTrain::HogTrain(vector<Mat> &pos, vector<Mat> &neg, HogParamList params): GeneralTrain(pos, neg) {
+HogTrain::HogTrain(vector<Mat> &pos, vector<Mat> &neg, const int &folds, HogParamList params): AbstractTrain(pos, neg, folds) {
     // Generate the parameters combinations
     vector<int> temp;
     combineVector(params_, params, temp);
@@ -16,6 +16,7 @@ void HogTrain::run() {
         HOGDescriptor hog = makeDescriptor(params_[i]);
 
         // Prepare pos and negatives samples
+        HOGTRAIN_LOG << "Preparing samples: computing HOG and labeling the samples" << endl;
         vector<SampleInfo> pos_set = prepareSamples(pos_, hog, +1);
         vector<SampleInfo> neg_set = prepareSamples(neg_, hog, -1);
 
@@ -34,15 +35,14 @@ void HogTrain::run() {
             kf_neg.getFold(fold + 1, back_inserter(train_neg), back_inserter(test_neg));
 
             // Allocate the SVM parameters (labels and HOG)
-            HOGTRAIN_LOG << "Preparing SVM parameters on fold #" << fold+1 << endl;
+            HOGTRAIN_LOG << "Preparing SVM parameters for fold #" << fold+1 << endl;
             vector<int> labels;
             vector<Mat> gradient_lst;
             prepareSvmParameters(gradient_lst, labels, train_pos, train_neg);
 
             // Train a SVM using the actual HOGs
             HOGTRAIN_LOG << "Training SVM on fold #" << fold+1 << endl;
-            Ptr<SVM> svm = SVM::create();
-            trainer.trainSvm(gradient_lst, labels, svm);
+            Ptr<SVM> svm = trainer.trainSvm(gradient_lst, labels);
 
             // Configure the detector to use the trained SVM
             vector<float> detector = trainer.getSvmDetector(svm);

@@ -12,29 +12,13 @@ class Trainer {
 public:
     vector<float> getSvmDetector(const Ptr<SVM>& svm);
 
-    Mat computeHog(Mat img, HOGDescriptor hog, bool do_flip = false);
+    Mat computeHog(const Mat& img, const HOGDescriptor& hog, bool do_flip = false);
 
-    vector<Mat> computeHogList(const vector<Mat>& img_lst, HOGDescriptor hog);
+    vector<Mat> computeHogList(const vector<Mat>& input_lst, HOGDescriptor hog);
 
-    void computeHogList(const vector<Mat>& input_lst, vector<Mat>& output_lst, vector<int>& output_labels, HOGDescriptor hog, int type) {
-        for(vector<Mat>::const_iterator img = input_lst.begin(); img < input_lst.end(); img++) {
-            vector<float> descriptors;
+    void computeHogList(const vector<Mat>& input_lst, vector<Mat>& output_lst, vector<int>& output_labels, HOGDescriptor hog, int type);
 
-            // Compute HoG (normal image)
-            descriptors = computeHog(*img, hog, false);
-            output_lst.push_back(Mat(descriptors).clone());
-            output_labels.push_back(type);
-
-            // Compute HoG (flipped image)
-            descriptors = computeHog(*img, hog, true);
-            output_lst.push_back(Mat(descriptors).clone());
-            output_labels.push_back(type);
-        }
-    }
-
-    void trainSvm(const vector<Mat>& gradient_lst, const vector<int>& labels, string model_file);
-
-    void trainSvm(const vector<Mat>& gradient_lst, const vector<int>& labels, Ptr<SVM> &svm, bool automatic = false);
+    Ptr<SVM> trainSvm(const vector<Mat>& gradient_lst, const vector<int>& labels, bool automatic = false);
 
 private:
     /*

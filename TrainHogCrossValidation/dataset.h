@@ -11,8 +11,10 @@ using namespace cv;
 class DataSet {
 public:
     DataSet(const string & prefix, const string & filename);
+    DataSet(const string & prefix, const string & filename, const Size & sample_size);
 
     void loadImages(const string & prefix, const string & filename);
+    void loadImages(const string & prefix, const string & filename, const Size & sample_size);
 
     vector<Mat> get();
 

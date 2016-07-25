@@ -1,15 +1,15 @@
-#include "generaltrain.h"
+#include "train_abstract.h"
 #include "log.h"
 
-GeneralTrain::GeneralTrain(vector<Mat> &pos, vector<Mat> &neg, int folds): pos_(pos), neg_(neg), folds_(folds) {
+AbstractTrain::AbstractTrain(vector<Mat> &pos, vector<Mat> &neg, int folds): pos_(pos), neg_(neg), folds_(folds) {
     ;
 }
 
-void GeneralTrain::setFolds(int k) {
+void AbstractTrain::setFolds(int k) {
     folds_ = k;
 }
 
-HOGDescriptor GeneralTrain::makeDescriptor(HogParam &params) {
+HOGDescriptor AbstractTrain::makeDescriptor(const HogParam &params) {
     HOGDescriptor hog;
     hog.blockSize   = Size(params[BLOCK_SIZE], params[BLOCK_SIZE]);
     hog.cellSize    = Size(params[CELL_SIZE], params[CELL_SIZE]);
@@ -19,7 +19,7 @@ HOGDescriptor GeneralTrain::makeDescriptor(HogParam &params) {
     return hog;
 }
 
-void GeneralTrain::computeMultipleHog(Mat img, int type, const HOGDescriptor &hog, vector<SampleInfo>& samples) {
+void AbstractTrain::computeMultipleHog(Mat img, int type, const HOGDescriptor &hog, vector<SampleInfo>& samples) {
     Trainer trainer;
     SampleInfo s;
 
@@ -34,7 +34,7 @@ void GeneralTrain::computeMultipleHog(Mat img, int type, const HOGDescriptor &ho
     samples.push_back(s);
 }
 
-Kfold<vector<SampleInfo>::const_iterator> GeneralTrain::prepareSamples(vector<Mat> &pos, vector<Mat> &neg, const HOGDescriptor& hog) {
+Kfold<vector<SampleInfo>::const_iterator> AbstractTrain::prepareSamples(vector<Mat> &pos, vector<Mat> &neg, const HOGDescriptor& hog) {
     vector<SampleInfo> samples;
 
     TRAIN_LOG << "Starting HOG computing..." << endl;
@@ -57,7 +57,7 @@ Kfold<vector<SampleInfo>::const_iterator> GeneralTrain::prepareSamples(vector<Ma
     return kf;
 }
 
-vector<SampleInfo> GeneralTrain::prepareSamples(const vector<Mat> &set, const HOGDescriptor &hog, const int &type) {
+vector<SampleInfo> AbstractTrain::prepareSamples(const vector<Mat> &set, const HOGDescriptor &hog, const int &type) {
     Trainer trainer;
 
     vector<SampleInfo> samples;
@@ -78,7 +78,7 @@ vector<SampleInfo> GeneralTrain::prepareSamples(const vector<Mat> &set, const HO
     return samples;
 }
 
-void GeneralTrain::prepareSvmParameters(vector<Mat>& gradient_lst, vector<int>& labels, const vector<SampleInfo>& pos, const vector<SampleInfo>& neg) {
+void AbstractTrain::prepareSvmParameters(vector<Mat>& gradient_lst, vector<int>& labels, const vector<SampleInfo>& pos, const vector<SampleInfo>& neg) {
     vector<SampleInfo>::const_iterator info;
     for(info = pos.begin(); info < pos.end(); info++) {
         gradient_lst.push_back((*info).hog.clone());
