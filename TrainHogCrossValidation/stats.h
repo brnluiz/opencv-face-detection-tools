@@ -4,7 +4,7 @@
 #include <opencv2/opencv.hpp>
 #include <cstdint>
 
-#include "train_abstract.h"
+#include "trainer_abstract.h"
 
 using namespace std;
 using namespace cv;

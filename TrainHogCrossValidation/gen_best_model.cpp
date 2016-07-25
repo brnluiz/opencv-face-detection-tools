@@ -6,8 +6,8 @@
 #include <vector>
 
 #include "dataset.h"
-#include "train_hog.h"
-#include "train_svm.h"
+#include "trainer_hog.h"
+#include "trainer_svm.h"
 
 using namespace std;
 
@@ -39,18 +39,19 @@ int main() {
     MAIN_LOG << "Starting process..." << endl;
 
     MAIN_LOG << "- First step: choosing the best HOG parameters" << endl;
-    HogTrain hog_train(pos, neg, 10, params);
+    TrainerHog hog_train(pos, neg, 10, params);
     hog_train.run();
     HogBest hog_best = hog_train.getBest();
     hog_best.print();
 
     MAIN_LOG << "- Second step: choosing best SVM parameters" << endl;
-    SvmTrain svm_train(pos, neg, 10, hog_best.descriptor);
+    TrainerSvm svm_train(pos, neg, 10, hog_best.descriptor);
     svm_train.run();
     Ptr<SVM> svm = svm_train.getBest();
     svm->save("best-svm.xml");
 
     MAIN_LOG << " - Third step: testing against the test set #1 to get false positives" << endl;
+
 
     MAIN_LOG << " - Forth step: retrain using the new false positives samples (hard negative training)" << endl;
 

@@ -1,18 +1,18 @@
-#include "train_svm.h"
+#include "trainer_svm.h"
 
 #include "log.h"
 #include "utils_hog.h"
 #include "utils_svm.h"
 
-SvmTrain::SvmTrain(vector<Mat> &pos, vector<Mat> &neg, const int& folds, HOGDescriptor &hog):
-    AbstractTrain(pos, neg, folds), hog_(hog) {
+TrainerSvm::TrainerSvm(vector<Mat> &pos, vector<Mat> &neg, const int& folds, HOGDescriptor &hog):
+    TrainerAbstract(pos, neg, folds), hog_(hog) {
 }
 
-SvmTrain::SvmTrain(vector<Mat> &pos, vector<Mat> &neg, const int& folds, const HogParam &param): AbstractTrain(pos, neg, folds) {
+TrainerSvm::TrainerSvm(vector<Mat> &pos, vector<Mat> &neg, const int& folds, const HogParam &param): TrainerAbstract(pos, neg, folds) {
     hog_ = makeDescriptor(param);
 }
 
-void SvmTrain::run() {
+void TrainerSvm::run() {
     // Allocate the SVM parameters (labels and HOG)
     SVMTRAIN_LOG << "Preparing SVM parameters" << endl;
     vector<int> labels;
@@ -25,6 +25,6 @@ void SvmTrain::run() {
     bestsvm_ = SvmUtils::train(gradient_lst, labels, true);
 }
 
-Ptr<SVM> SvmTrain::getBest() {
+Ptr<SVM> TrainerSvm::getBest() {
     return bestsvm_;
 }

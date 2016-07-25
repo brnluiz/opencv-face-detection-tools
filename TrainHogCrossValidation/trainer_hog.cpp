@@ -1,16 +1,16 @@
-#include "train_hog.h"
+#include "trainer_hog.h"
 
 #include "log.h"
 #include "utils_hog.h"
 #include "utils_svm.h"
 
-HogTrain::HogTrain(vector<Mat> &pos, vector<Mat> &neg, const int &folds, HogParamList params): AbstractTrain(pos, neg, folds) {
+TrainerHog::TrainerHog(vector<Mat> &pos, vector<Mat> &neg, const int &folds, HogParamList params): TrainerAbstract(pos, neg, folds) {
     // Generate the parameters combinations
     vector<int> temp;
     combineVector(params_, params, temp);
 }
 
-void HogTrain::run() {
+void TrainerHog::run() {
     // Loop through the parameters
     for(uint i = 0; i < params_.size(); i++) {
         HOGTRAIN_LOG << "Parameter set #" << i+1 << endl;
@@ -81,11 +81,11 @@ void HogTrain::run() {
     }
 }
 
-HogBest HogTrain::getBest() {
+HogBest TrainerHog::getBest() {
     return besthog_;
 }
 
-void HogTrain::combineVector(vector<vector<int> > &output_perms, const vector<vector<int> > &input, vector<int> &cur_perm, unsigned cur_row) {
+void TrainerHog::combineVector(vector<vector<int> > &output_perms, const vector<vector<int> > &input, vector<int> &cur_perm, unsigned cur_row) {
     if (cur_row >= input.size()) {
         // This is where you have found a new permutation.
         // Do whatever you want with it.

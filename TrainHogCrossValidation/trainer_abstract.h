@@ -43,9 +43,9 @@ struct SampleInfo {
 };
 
 
-class AbstractTrain {
+class TrainerAbstract {
 public:
-    AbstractTrain(vector<Mat>& pos, vector<Mat>& neg, int folds = 10);
+    TrainerAbstract(vector<Mat>& pos, vector<Mat>& neg, int folds = 10);
 
     virtual void run() = 0;
 

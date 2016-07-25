@@ -20,20 +20,22 @@ SOURCES += \
     dataset.cpp \
     kfold.cpp \
     stats.cpp \
-    train_abstract.cpp \
-    train_svm.cpp \
-    train_hog.cpp \
     gen_best_model.cpp \
     utils_svm.cpp \
-    utils_hog.cpp
+    utils_hog.cpp \
+    tester_ground.cpp \
+    trainer_hog.cpp \
+    trainer_svm.cpp \
+    trainer_abstract.cpp
 
 HEADERS += \
     dataset.h \
     kfold.h \
     stats.h \
     log.h \
-    train_abstract.h \
-    train_svm.h \
-    train_hog.h \
     utils_svm.h \
-    utils_hog.h
+    utils_hog.h \
+    tester_ground.h \
+    trainer_svm.h \
+    trainer_hog.h \
+    trainer_abstract.h

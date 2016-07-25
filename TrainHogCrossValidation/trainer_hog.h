@@ -5,15 +5,15 @@
 
 #include "stats.h"
 #include "kfold.h"
-#include "train_abstract.h"
+#include "trainer_abstract.h"
 
 using namespace std;
 using namespace cv;
 
-class HogTrain: public AbstractTrain {
+class TrainerHog: public TrainerAbstract {
 public:
 
-    HogTrain(vector<Mat>& pos, vector<Mat>& neg, const int &folds, HogParamList params);
+    TrainerHog(vector<Mat>& pos, vector<Mat>& neg, const int &folds, HogParamList params);
 
     void run();
 
