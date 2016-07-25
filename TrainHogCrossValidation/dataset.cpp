@@ -1,10 +1,8 @@
+#include "dataset.h"
+
 #include <iostream>
 #include <fstream>
 
-#include <vector>
-#include <string>
-
-#include "dataset.h"
 #include "log.h"
 
 using namespace std;

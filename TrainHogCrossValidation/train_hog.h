@@ -1,12 +1,11 @@
 #ifndef HOGTRAIN_H
 #define HOGTRAIN_H
 
+#include <vector>
+
 #include "stats.h"
-#include "trainer.h"
 #include "kfold.h"
 #include "train_abstract.h"
-
-#include <vector>
 
 using namespace std;
 using namespace cv;

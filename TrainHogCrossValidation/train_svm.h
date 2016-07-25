@@ -2,11 +2,9 @@
 #define SVMTRAIN_H
 
 #include "stats.h"
-#include "trainer.h"
 #include "kfold.h"
 
 #include "train_abstract.h"
-
 
 class SvmTrain: public AbstractTrain {
 public:

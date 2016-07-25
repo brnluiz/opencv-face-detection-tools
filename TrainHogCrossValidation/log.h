@@ -7,5 +7,6 @@
 #define STAT_LOG cout << "[stat] "
 #define DATA_LOG cout << "[data] "
 #define MAIN_LOG cout << "[main] "
+#define ERROR_LOG cerr << "[error] "
 
 #endif // LOG_H

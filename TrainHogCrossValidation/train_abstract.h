@@ -4,7 +4,6 @@
 #include <opencv2/opencv.hpp>
 #include <vector>
 
-#include "trainer.h"
 #include "kfold.h"
 #include "log.h"
 
@@ -20,12 +19,12 @@ struct HogBest {
     float acc;
 
     void print() {
-        HOGTRAIN_LOG << " ! Best HOG info !"
-                     << " * Accuracy: " << acc
-                     << " * Block size: " << descriptor.blockSize
-                     << " * Cell size: " << descriptor.cellSize
-                     << " * Block stride: " << descriptor.blockStride
-                     << " * Win size: " << descriptor.winSize
+        HOGTRAIN_LOG << "Best HOG info:" << endl
+                     << " * Accuracy: " << acc << endl
+                     << " * Block size: " << descriptor.blockSize << endl
+                     << " * Cell size: " << descriptor.cellSize << endl
+                     << " * Block stride: " << descriptor.blockStride << endl
+                     << " * Win size: " << descriptor.winSize << endl
                      << endl;
     }
 };
@@ -59,7 +58,7 @@ protected:
 
     HOGDescriptor makeDescriptor(const HogParam &params);
 
-    void computeMultipleHog(Mat img, int type, const HOGDescriptor &hog, vector<SampleInfo>& samples);
+    void computeMultipleHog(const Mat &img, const int &type, const HOGDescriptor &hog, vector<SampleInfo>& samples);
 
     Kfold<vector<SampleInfo>::const_iterator> prepareSamples(vector<Mat> &pos, vector<Mat> &neg, const HOGDescriptor& hog);
 

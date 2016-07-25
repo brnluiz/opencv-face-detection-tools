@@ -1,5 +1,8 @@
 #include "train_abstract.h"
+
 #include "log.h"
+#include "utils_hog.h"
+#include "utils_svm.h"
 
 AbstractTrain::AbstractTrain(vector<Mat> &pos, vector<Mat> &neg, int folds): pos_(pos), neg_(neg), folds_(folds) {
     ;
@@ -19,18 +22,17 @@ HOGDescriptor AbstractTrain::makeDescriptor(const HogParam &params) {
     return hog;
 }
 
-void AbstractTrain::computeMultipleHog(Mat img, int type, const HOGDescriptor &hog, vector<SampleInfo>& samples) {
-    Trainer trainer;
+void AbstractTrain::computeMultipleHog(const Mat &img, const int &type, const HOGDescriptor &hog, vector<SampleInfo>& samples) {
     SampleInfo s;
+    s.image = img.clone();
+    s.type = type;
 
     // Compute the HOG (normal image)
-    s.image = img.clone();
-    s.hog = Mat(trainer.computeHog(img, hog));
-    s.type = type;
+    s.hog = HogUtils::compute(img, hog).clone();
     samples.push_back(s);
 
     // Get the flipped version as well
-    s.hog = Mat(trainer.computeHog(img, hog, true));
+    s.hog = HogUtils::compute(img, hog, true).clone();
     samples.push_back(s);
 }
 
@@ -58,8 +60,6 @@ Kfold<vector<SampleInfo>::const_iterator> AbstractTrain::prepareSamples(vector<M
 }
 
 vector<SampleInfo> AbstractTrain::prepareSamples(const vector<Mat> &set, const HOGDescriptor &hog, const int &type) {
-    Trainer trainer;
-
     vector<SampleInfo> samples;
     for(vector<Mat>::const_iterator img = set.begin(); img < set.end(); img++) {
         SampleInfo s;
@@ -67,11 +67,11 @@ vector<SampleInfo> AbstractTrain::prepareSamples(const vector<Mat> &set, const H
         s.type = type;
 
         // Normal, not flipped
-        s.hog = trainer.computeHog(s.image, hog, false).clone();
+        s.hog = HogUtils::compute(s.image, hog, false).clone();
         samples.push_back(s);
 
         // Normal, flipped
-        s.hog = trainer.computeHog(s.image, hog, false).clone();
+        s.hog = HogUtils::compute(s.image, hog, false).clone();
         samples.push_back(s);
     }
 

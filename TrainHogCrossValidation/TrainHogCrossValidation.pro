@@ -20,18 +20,20 @@ SOURCES += \
     dataset.cpp \
     kfold.cpp \
     stats.cpp \
-    trainer.cpp \
     train_abstract.cpp \
     train_svm.cpp \
     train_hog.cpp \
-    gen_best_model.cpp
+    gen_best_model.cpp \
+    utils_svm.cpp \
+    utils_hog.cpp
 
 HEADERS += \
     dataset.h \
     kfold.h \
     stats.h \
-    trainer.h \
     log.h \
     train_abstract.h \
     train_svm.h \
-    train_hog.h
+    train_hog.h \
+    utils_svm.h \
+    utils_hog.h
