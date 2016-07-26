@@ -39,7 +39,7 @@ void TrainerAbstract::computeMultipleHog(const Mat &img, const int &type, const 
 Kfold<vector<SampleInfo>::const_iterator> TrainerAbstract::prepareSamples(vector<Mat> &pos, vector<Mat> &neg, const HOGDescriptor& hog) {
     vector<SampleInfo> samples;
 
-    TRAIN_LOG << "Starting HOG computing..." << endl;
+    TRAINER_LOG << "Starting HOG computing..." << endl;
 
     // Positive samples
     for (vector<Mat>::iterator img = pos.begin(); img < pos.end(); img++) {
@@ -51,8 +51,8 @@ Kfold<vector<SampleInfo>::const_iterator> TrainerAbstract::prepareSamples(vector
         computeMultipleHog(*img, -1, hog, samples);
     }
 
-    TRAIN_LOG << "Finished HOG computing" << endl;
-    TRAIN_LOG << "Samples size: " << samples.size() << endl;
+    TRAINER_LOG << "Finished HOG computing" << endl;
+    TRAINER_LOG << "Samples size: " << samples.size() << endl;
 
     Kfold<vector<SampleInfo>::const_iterator> kf(folds_, samples.begin(), samples.end());
 

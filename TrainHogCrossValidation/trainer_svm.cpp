@@ -14,14 +14,14 @@ TrainerSvm::TrainerSvm(vector<Mat> &pos, vector<Mat> &neg, const int& folds, con
 
 void TrainerSvm::run() {
     // Allocate the SVM parameters (labels and HOG)
-    SVMTRAIN_LOG << "Preparing SVM parameters" << endl;
+    TRAINERSVM_LOG << "Preparing SVM parameters" << endl;
     vector<int> labels;
     vector<Mat> gradient_lst;
     HogUtils::computeList(pos_, gradient_lst, labels, hog_, +1);
     HogUtils::computeList(neg_, gradient_lst, labels, hog_, -1);
 
     // Train a SVM using the actual HOGs
-    SVMTRAIN_LOG << "Training SVM and choosing the best parameters" << endl;
+    TRAINERSVM_LOG << "Training SVM and choosing the best parameters" << endl;
     bestsvm_ = SvmUtils::train(gradient_lst, labels, true);
 }
 

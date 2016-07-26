@@ -13,12 +13,12 @@ TrainerHog::TrainerHog(vector<Mat> &pos, vector<Mat> &neg, const int &folds, Hog
 void TrainerHog::run() {
     // Loop through the parameters
     for(uint i = 0; i < params_.size(); i++) {
-        HOGTRAIN_LOG << "Parameter set #" << i+1 << endl;
+        TRAINERHOG_LOG << "Parameter set #" << i+1 << endl;
         // Get HOG Parameters Configs
         HOGDescriptor hog = makeDescriptor(params_[i]);
 
         // Prepare pos and negatives samples (if it is an invalid set, just continue to the next one)
-        HOGTRAIN_LOG << "- Preparing samples: computing HOG and labeling the samples" << endl;
+        TRAINERHOG_LOG << "- Preparing samples: computing HOG and labeling the samples" << endl;
         vector<SampleInfo> pos_set, neg_set;
         try {
             pos_set = prepareSamples(pos_, hog, +1);
@@ -33,9 +33,9 @@ void TrainerHog::run() {
 
         // Cross-validation
         float acc;
-        HOGTRAIN_LOG << "- Cross validating..." << endl;
+        TRAINERHOG_LOG << "- Cross validating..." << endl;
         for (int fold = 0; fold != folds_; fold++) {
-            HOGTRAIN_LOG << " * Fold #" << fold+1 << ": training..."<< endl;
+            TRAINERHOG_LOG << " * Fold #" << fold+1 << ": training..."<< endl;
 
             // Get the k fold for both sets (training and testing)
             vector<SampleInfo> train_pos, test_pos;
@@ -56,26 +56,26 @@ void TrainerHog::run() {
             hog.setSVMDetector(detector);
 
             // Test the actual setting using the test set
-            HOGTRAIN_LOG << " * Fold #" << fold+1 << ": testing..." << endl;
+            TRAINERHOG_LOG << " * Fold #" << fold+1 << ": testing..." << endl;
             Stats stat(hog, test_pos, test_neg);
             stat.test();
 
             // Save the accuracy
-            acc += stat.get_accuracy();
+            acc += stat.getAccuracy();
 
-            HOGTRAIN_LOG << " + Fold #" << fold+1 << " accuracy: " << stat.get_accuracy() << endl;
+            TRAINERHOG_LOG << " + Fold #" << fold+1 << " accuracy: " << stat.getAccuracy() << endl;
         }
 
         // Average accuracy (based on the number of folds)
         acc = acc / folds_;
-        HOGTRAIN_LOG << "- Final accuracy: " << acc << endl << endl;
+        TRAINERHOG_LOG << "- Final accuracy: " << acc << endl << endl;
 
         // If the average accuracy is better than the last parameter set, then save it
         if (acc > besthog_.acc) {
             besthog_.descriptor = hog;
             besthog_.acc = acc;
 
-            HOGTRAIN_LOG << "New best HOG!" << endl;
+            TRAINERHOG_LOG << "New best HOG!" << endl;
             besthog_.print();
         }
     }

@@ -8,6 +8,7 @@
 #include "dataset.h"
 #include "trainer_hog.h"
 #include "trainer_svm.h"
+#include "tester_ground.h"
 
 using namespace std;
 
@@ -23,15 +24,15 @@ void print_vector(vector<T> & v) {
 int main() {
     // HOG Parameters (which will be combined and tested)
     vector<vector<int>> params = {
-        {16},    // Block size
-        {16},    // Cell size
-        {16}, // Block stride
+        {4,8,16},    // Block size
+        {4,8,16},    // Cell size
+        {4,8,16}, // Block stride
         {32},          // Win size
     };
 
     MAIN_LOG << "Loading images sets..." << endl;
-    DataSet pos_set("/home/brunoluiz/qt/FaceDetectionTools/builds/release/linux/x86/TrainHog/", "caltech.lst");
-    DataSet neg_set("/home/brunoluiz/qt/FaceDetectionTools/builds/release/linux/x86/TrainHog/", "neg.lst", Size(32,32));
+    DataSet pos_set("/home/brunoluiz/qt/FaceDetectionTools/Data/train/", "caltech.lst");
+    DataSet neg_set("/home/brunoluiz/qt/FaceDetectionTools/Data/train/", "neg.lst", Size(32,32));
     vector<Mat> pos = pos_set.get();
     vector<Mat> neg = neg_set.get();
     MAIN_LOG << "Finished loading!" << endl;
@@ -51,21 +52,54 @@ int main() {
     svm->save("best-svm.xml");
 
     MAIN_LOG << " - Third step: testing against the test set #1 to get false positives" << endl;
+    TesterGround tester1("/home/brunoluiz/qt/FaceDetectionTools/Data/test/set1/",
+                        "/home/brunoluiz/qt/FaceDetectionTools/Data/test/ground_truth_set1.csv",
+                        "/home/brunoluiz/qt/FaceDetectionTools/tmp/",
+                        hog_best.descriptor, svm);
+    tester1.saveReport("/home/brunoluiz/qt/FaceDetectionTools/tmp/report.csv");
 
+    // This is not a good way to program
+    // If you continue like this you are not going to receive xmas gifts
+    system("/home/brunoluiz/qt/FaceDetectionTools/gen_set2.sh");
 
     MAIN_LOG << " - Forth step: retrain using the new false positives samples (hard negative training)" << endl;
+    // Loads the negative samples + hard negative mining samples
+    DataSet hard_set("/home/brunoluiz/qt/FaceDetectionTools/tmp/set2/", "set2.lst", Size(32,32));
+    vector<Mat> hard = hard_set.get();
+
+    // Train the SVM again
+    TrainerSvm svm_train_hard(pos, hard, 10, hog_best.descriptor);
+    svm_train_hard.run();
+    Ptr<SVM> svm_hard = svm_train_hard.getBest();
+    svm_hard->save("best-svm-hard.xml");
 
     MAIN_LOG << " - Final step: testing against the test set #2" << endl;
+    TesterGround tester2("/home/brunoluiz/qt/FaceDetectionTools/Data/test/set2/",
+                        "/home/brunoluiz/qt/FaceDetectionTools/Data/test/ground_truth_set2.csv",
+                        "/home/brunoluiz/qt/FaceDetectionTools/tmp/",
+                        hog_best.descriptor, svm_hard);
+    tester2.saveReport("/home/brunoluiz/qt/FaceDetectionTools/tmp/set2/report.csv");
 
     MAIN_LOG << "~ Finished processing" << endl;
 
-//    Testing only the train_auto
-//    MAIN_LOG << "- Second step: choosing best SVM parameters" << endl;
-//    vector<int> test_params = {16,16,16,32};
-//    SvmTrain svm_train(pos, neg, 10, test_params);
-//    svm_train.run();
-//    Ptr<SVM> svm = svm_train.getBest();
-//    svm->save("best-svm.xml");
+    Stats stats = tester2.getStats();
+    cout << stats;
+
+//    Ptr<SVM> svm = SVM::create();
+//    svm = SVM::load<SVM>("best-svm.xml");
+
+//    HOGDescriptor hog;
+//    hog.blockSize   = Size(16,16);
+//    hog.blockStride = Size(16,16);
+//    hog.cellSize    = Size(16,16);
+//    hog.winSize     = Size(32,32);
+
+//    MAIN_LOG << " - Third step: testing against the test set #1 to get false positives" << endl;
+//    TesterGround tester("/home/brunoluiz/qt/FaceDetectionTools/Data/test/set2/",
+//                        "/home/brunoluiz/qt/FaceDetectionTools/Data/test/ground_truth_set2.csv",
+//                        "/home/brunoluiz/qt/FaceDetectionTools/tmp/",
+//                        hog, svm);
+//    tester.run();
 
     return 0;
 }

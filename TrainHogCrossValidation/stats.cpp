@@ -29,9 +29,18 @@ Stats::Stats(const HOGDescriptor &hog, const vector<SampleInfo> &pos, const vect
 
 }
 
-float Stats::get_accuracy() {
+float Stats::getAccuracy() {
     return (float)(positives + negatives) /
             (float)(positives + negatives + false_positives + false_negatives);
+}
+
+void Stats::print() {
+    STAT_LOG << "Accuracy info: " << endl;
+    STAT_LOG << "Positives: " << positives << endl;
+    STAT_LOG << "Negatives: " << negatives << endl;
+    STAT_LOG << "False positives: " << false_positives << endl;
+    STAT_LOG << "False negatives: " << false_negatives << endl;
+    STAT_LOG << "General Accuracy: " << getAccuracy() << endl;
 }
 
 void Stats::test(const vector<SampleInfo> &samples) {

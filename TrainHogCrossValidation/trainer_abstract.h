@@ -19,7 +19,7 @@ struct HogBest {
     float acc;
 
     void print() {
-        HOGTRAIN_LOG << "Best HOG info:" << endl
+        TRAINERHOG_LOG << "Best HOG info:" << endl
                      << " * Accuracy: " << acc << endl
                      << " * Block size: " << descriptor.blockSize << endl
                      << " * Cell size: " << descriptor.cellSize << endl

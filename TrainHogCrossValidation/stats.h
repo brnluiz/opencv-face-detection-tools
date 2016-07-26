@@ -19,7 +19,20 @@ public:
 
     Stats(const HOGDescriptor& hog, const vector<SampleInfo>& pos, const vector<SampleInfo>& neg);
 
-    float get_accuracy();
+    float getAccuracy();
+
+    void print();
+
+    friend std::ostream& operator<<(std::ostream& os, Stats& stat) {
+        os << "Accuracy info" << endl;
+        os << "Positives, " << stat.positives << endl;
+        os << "Negatives, " << stat.negatives << endl;
+        os << "False positives, " << stat.false_positives << endl;
+        os << "False negatives, " << stat.false_negatives << endl;
+        os << "General Accuracy, " << stat.getAccuracy() << endl;
+
+        return os;
+    }
 
     void test(const vector<SampleInfo>& samples);
 
@@ -39,12 +52,12 @@ public:
 
     void testNegatives();
 
-
-protected:
     uint32_t positives;
     uint32_t negatives;
     uint32_t false_positives;
     uint32_t false_negatives;
+
+protected:
 
     HOGDescriptor hog_;
 
