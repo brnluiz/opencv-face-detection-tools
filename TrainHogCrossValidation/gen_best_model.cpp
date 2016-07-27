@@ -24,9 +24,9 @@ void print_vector(vector<T> & v) {
 int main() {
     // HOG Parameters (which will be combined and tested)
     vector<vector<int>> params = {
-        {4,8,16},    // Block size
+        {8,16},    // Block size
         {4,8,16},    // Cell size
-        {4,8,16}, // Block stride
+        {8,16}, // Block stride
         {32},          // Win size
     };
 
@@ -38,6 +38,9 @@ int main() {
     MAIN_LOG << "Finished loading!" << endl;
 
     MAIN_LOG << "Starting process..." << endl;
+
+    // This is not a good way to program: if you continue like this, you are not going to receive xmas gifts
+    system("/home/brunoluiz/qt/FaceDetectionTools/clean.sh");
 
     MAIN_LOG << "- First step: choosing the best HOG parameters" << endl;
     TrainerHog hog_train(pos, neg, 10, params);
@@ -58,8 +61,7 @@ int main() {
                         hog_best.descriptor, svm);
     tester1.saveReport("/home/brunoluiz/qt/FaceDetectionTools/tmp/report.csv");
 
-    // This is not a good way to program
-    // If you continue like this you are not going to receive xmas gifts
+    // This is not a good way to program: if you continue like this, you are not going to receive xmas gifts
     system("/home/brunoluiz/qt/FaceDetectionTools/gen_set2.sh");
 
     MAIN_LOG << " - Forth step: retrain using the new false positives samples (hard negative training)" << endl;

@@ -17,6 +17,13 @@ void TrainerHog::run() {
         // Get HOG Parameters Configs
         HOGDescriptor hog = makeDescriptor(params_[i]);
 
+        // Print the training params
+        TRAINERHOG_LOG << "- Selected parameters: [ ";
+        for(uint j = 0; j < params_[i].size(); j++) {
+            cout << params_[i][j] << " ";
+        }
+        cout << "]" << endl;
+
         // Prepare pos and negatives samples (if it is an invalid set, just continue to the next one)
         TRAINERHOG_LOG << "- Preparing samples: computing HOG and labeling the samples" << endl;
         vector<SampleInfo> pos_set, neg_set;
@@ -27,6 +34,7 @@ void TrainerHog::run() {
             ERROR_LOG << "Invalid set of parameters" << endl;
             continue;
         }
+
 
         Kfold<vector<SampleInfo>::const_iterator> kf_pos(folds_, pos_set.begin(), pos_set.end());
         Kfold<vector<SampleInfo>::const_iterator> kf_neg(folds_, neg_set.begin(), neg_set.end());
