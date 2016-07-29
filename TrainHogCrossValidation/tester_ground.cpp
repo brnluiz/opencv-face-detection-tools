@@ -65,8 +65,7 @@ void TesterGround::run() {
 
         }
 
-        stats_.false_positives = detections.size();
-        stats_.false_negatives = groundboxes_count_ - stats_.positives;
+        stats_.false_positives += detections.size();
 
         // Output the image to the results folder
         saveOutput(output_img, (*item).name);

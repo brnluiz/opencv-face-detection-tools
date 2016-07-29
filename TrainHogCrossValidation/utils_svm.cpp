@@ -40,8 +40,7 @@ namespace SvmUtils {
         Ptr<SVM> svm = SVM::create();
 
         svm->setKernel(SVM::LINEAR);
-        svm->setType(SVM::C_SVC); // C_SVC; // EPSILON_SVR; // may be also NU_SVR; // do regression task
-        svm->setTermCriteria(TermCriteria(CV_TERMCRIT_ITER+CV_TERMCRIT_EPS, 1000, 1e-6 ));
+//        svm->setTermCriteria(TermCriteria(CV_TERMCRIT_ITER, 1000, 1e-6 ));
 
         /* Default values to train SVM */
         svm->setCoef0(0.0); //(POLY / SIGMOID)
@@ -53,8 +52,11 @@ namespace SvmUtils {
         svm->setGamma(0.01); // (POLY / RBF / SIGMOID / CHI2)
 
         if (!automatic) {
+            svm->setType(SVM::EPS_SVR); // C_SVC; // EPSILON_SVR; // may be also NU_SVR; // do regression task
+            svm->setTermCriteria(TermCriteria(CV_TERMCRIT_ITER+CV_TERMCRIT_EPS, 1000, 1e-6 ));
             svm->train(train);
         } else {
+            svm->setType(SVM::NU_SVR); // C_SVC; // EPSILON_SVR; // may be also NU_SVR; // do regression task
             svm->trainAuto(train, 10,
                            SVM::getDefaultGrid(SVM::C),
                            SVM::getDefaultGrid(SVM::GAMMA),

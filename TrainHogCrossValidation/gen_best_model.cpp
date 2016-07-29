@@ -22,12 +22,23 @@ void print_vector(vector<T> & v) {
 }
 
 int main() {
+
+    // Use the following block of code if you need to test anything without doing the whole training
+//    HOGDescriptor hog;
+//    hog.blockSize   = Size(16,16);
+//    hog.blockStride = Size(16,16);
+//    hog.cellSize    = Size(16,16);
+//    hog.winSize     = Size(32,32);
+//    HogBest hog_best;
+//    hog_best.descriptor = hog;
+//    Ptr<SVM> svm = SVM::load<SVM>("best-svm.xml");
+
     // HOG Parameters (which will be combined and tested)
     vector<vector<int>> params = {
-        {8,16},    // Block size
-        {4,8,16},    // Cell size
-        {8,16}, // Block stride
-        {32},          // Win size
+        {8,16},   // Block size
+        {4,8,16}, // Cell size
+        {8,16},   // Block stride
+        {32},     // Win size
     };
 
     MAIN_LOG << "Loading images sets..." << endl;
@@ -39,6 +50,8 @@ int main() {
 
     MAIN_LOG << "Starting process..." << endl;
 
+    // --------------------------------------------------------------------------------------------
+
     // This is not a good way to program: if you continue like this, you are not going to receive xmas gifts
     system("/home/brunoluiz/qt/FaceDetectionTools/clean.sh");
 
@@ -48,18 +61,25 @@ int main() {
     HogBest hog_best = hog_train.getBest();
     hog_best.print();
 
+    // --------------------------------------------------------------------------------------------
+
     MAIN_LOG << "- Second step: choosing best SVM parameters" << endl;
     TrainerSvm svm_train(pos, neg, 10, hog_best.descriptor);
     svm_train.run();
     Ptr<SVM> svm = svm_train.getBest();
     svm->save("best-svm.xml");
 
+    // --------------------------------------------------------------------------------------------
+
     MAIN_LOG << " - Third step: testing against the test set #1 to get false positives" << endl;
     TesterGround tester1("/home/brunoluiz/qt/FaceDetectionTools/Data/test/set1/",
                         "/home/brunoluiz/qt/FaceDetectionTools/Data/test/ground_truth_set1.csv",
                         "/home/brunoluiz/qt/FaceDetectionTools/tmp/",
                         hog_best.descriptor, svm);
+    tester1.run();
     tester1.saveReport("/home/brunoluiz/qt/FaceDetectionTools/tmp/report.csv");
+
+    // --------------------------------------------------------------------------------------------
 
     // This is not a good way to program: if you continue like this, you are not going to receive xmas gifts
     system("/home/brunoluiz/qt/FaceDetectionTools/gen_set2.sh");
@@ -75,33 +95,20 @@ int main() {
     Ptr<SVM> svm_hard = svm_train_hard.getBest();
     svm_hard->save("best-svm-hard.xml");
 
+    // --------------------------------------------------------------------------------------------
+
     MAIN_LOG << " - Final step: testing against the test set #2" << endl;
     TesterGround tester2("/home/brunoluiz/qt/FaceDetectionTools/Data/test/set2/",
                         "/home/brunoluiz/qt/FaceDetectionTools/Data/test/ground_truth_set2.csv",
                         "/home/brunoluiz/qt/FaceDetectionTools/tmp/",
                         hog_best.descriptor, svm_hard);
+    tester2.run();
     tester2.saveReport("/home/brunoluiz/qt/FaceDetectionTools/tmp/set2/report.csv");
 
     MAIN_LOG << "~ Finished processing" << endl;
 
     Stats stats = tester2.getStats();
     cout << stats;
-
-//    Ptr<SVM> svm = SVM::create();
-//    svm = SVM::load<SVM>("best-svm.xml");
-
-//    HOGDescriptor hog;
-//    hog.blockSize   = Size(16,16);
-//    hog.blockStride = Size(16,16);
-//    hog.cellSize    = Size(16,16);
-//    hog.winSize     = Size(32,32);
-
-//    MAIN_LOG << " - Third step: testing against the test set #1 to get false positives" << endl;
-//    TesterGround tester("/home/brunoluiz/qt/FaceDetectionTools/Data/test/set2/",
-//                        "/home/brunoluiz/qt/FaceDetectionTools/Data/test/ground_truth_set2.csv",
-//                        "/home/brunoluiz/qt/FaceDetectionTools/tmp/",
-//                        hog, svm);
-//    tester.run();
 
     return 0;
 }

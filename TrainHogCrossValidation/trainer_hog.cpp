@@ -8,6 +8,9 @@ TrainerHog::TrainerHog(vector<Mat> &pos, vector<Mat> &neg, const int &folds, Hog
     // Generate the parameters combinations
     vector<int> temp;
     combineVector(params_, params, temp);
+
+    besthog_.descriptor = HOGDescriptor();
+    besthog_.acc = 0;
 }
 
 void TrainerHog::run() {
@@ -40,7 +43,7 @@ void TrainerHog::run() {
         Kfold<vector<SampleInfo>::const_iterator> kf_neg(folds_, neg_set.begin(), neg_set.end());
 
         // Cross-validation
-        float acc;
+        float acc = 0;
         TRAINERHOG_LOG << "- Cross validating..." << endl;
         for (int fold = 0; fold != folds_; fold++) {
             TRAINERHOG_LOG << " * Fold #" << fold+1 << ": training..."<< endl;
