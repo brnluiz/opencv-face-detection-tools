@@ -22,7 +22,7 @@ void TrainerSvm::run() {
 
     // Train a SVM using the actual HOGs
     TRAINERSVM_LOG << "Training SVM and choosing the best parameters" << endl;
-    bestsvm_ = SvmUtils::train(gradient_lst, labels, false);
+    bestsvm_ = SvmUtils::train(gradient_lst, labels, true);
 }
 
 Ptr<SVM> TrainerSvm::getBest() {
