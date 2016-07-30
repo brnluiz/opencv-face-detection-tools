@@ -3,8 +3,6 @@
 
 #include <vector>
 #include <string>
-#include <iomanip>
-#include <fstream>
 #include <opencv2/opencv.hpp>
 
 #include "utils_svm.h"
@@ -44,20 +42,7 @@ public:
 
     Stats getStats();
 
-    void saveReport(const string & output_path) {
-        Stats stat = getStats();
-
-        // Open a file for the report
-        ofstream report;
-        report.open(output_path);
-        if(!report.is_open()) {
-            exit(-1);
-        }
-
-        // Save the report
-        report << stat;
-        report.close();
-    }
+    void saveReport(const string & output_path);
 
 private:
     void saveOutput(const Mat& img, const string& item_name);

@@ -6,8 +6,8 @@ cd $DIR
 
 echo $DIR
 
-mkdir -p tmp
-mkdir -p tmp/false-positives
+mkdir -p tmp/set1
+mkdir -p tmp/set1/false-positives
 
-rm tmp/*.jpg
-rm tmp/false-positives/*.jpg
+rm tmp/set1/*.jpg
+rm tmp/set1/false-positives/*.jpg

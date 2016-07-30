@@ -16,6 +16,7 @@ public:
     TrainerHog(vector<Mat>& pos, vector<Mat>& neg, const int &folds, HogParamList params);
 
     void run();
+    void saveReport(const string & output_path);
 
     HogBest getBest();
 

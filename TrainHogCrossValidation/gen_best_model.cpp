@@ -58,6 +58,8 @@ int main() {
     MAIN_LOG << "- First step: choosing the best HOG parameters" << endl;
     TrainerHog hog_train(pos, neg, 10, params);
     hog_train.run();
+    hog_train.saveReport("/home/brunoluiz/qt/FaceDetectionTools/tmp/besthog.csv");
+
     HogBest hog_best = hog_train.getBest();
     hog_best.print();
 
@@ -74,10 +76,10 @@ int main() {
     MAIN_LOG << " - Third step: testing against the test set #1 to get false positives" << endl;
     TesterGround tester1("/home/brunoluiz/qt/FaceDetectionTools/Data/test/set1/",
                         "/home/brunoluiz/qt/FaceDetectionTools/Data/test/ground_truth_set1.csv",
-                        "/home/brunoluiz/qt/FaceDetectionTools/tmp/",
+                        "/home/brunoluiz/qt/FaceDetectionTools/tmp/set1/",
                         hog_best.descriptor, svm);
     tester1.run();
-    tester1.saveReport("/home/brunoluiz/qt/FaceDetectionTools/tmp/report.csv");
+    tester1.saveReport("/home/brunoluiz/qt/FaceDetectionTools/tmp/set1/report_set1.csv");
 
     // --------------------------------------------------------------------------------------------
 
@@ -103,7 +105,7 @@ int main() {
                         "/home/brunoluiz/qt/FaceDetectionTools/tmp/",
                         hog_best.descriptor, svm_hard);
     tester2.run();
-    tester2.saveReport("/home/brunoluiz/qt/FaceDetectionTools/tmp/set2/report.csv");
+    tester2.saveReport("/home/brunoluiz/qt/FaceDetectionTools/tmp/set2/report_set2.csv");
 
     MAIN_LOG << "~ Finished processing" << endl;
 

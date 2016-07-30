@@ -1,5 +1,7 @@
 #include "trainer_hog.h"
 
+#include <fstream>
+
 #include "log.h"
 #include "utils_hog.h"
 #include "utils_svm.h"
@@ -90,6 +92,19 @@ void TrainerHog::run() {
             besthog_.print();
         }
     }
+}
+
+void TrainerHog::saveReport(const string &output_path) {
+    // Open a file for the report
+    ofstream report;
+    report.open(output_path);
+    if(!report.is_open()) {
+        exit(-1);
+    }
+
+    // Save the report
+    report << besthog_;
+    report.close();
 }
 
 HogBest TrainerHog::getBest() {

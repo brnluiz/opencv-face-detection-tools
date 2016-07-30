@@ -1,5 +1,8 @@
 #include "tester_ground.h"
 
+#include <fstream>
+#include <iomanip>
+
 TesterGround::TesterGround(const string &groundimages_path, const string &groundlist_file, const string & output_path,
                            const HOGDescriptor &hog, const Ptr<SVM> &svm):
     hog_(hog), output_path_(output_path), falsepositive_count_(0), groundboxes_count_(0) {
@@ -66,6 +69,7 @@ void TesterGround::run() {
         }
 
         stats_.false_positives += detections.size();
+        cout << stats_.false_positives << endl;
 
         // Output the image to the results folder
         saveOutput(output_img, (*item).name);
@@ -83,6 +87,21 @@ void TesterGround::setOutput(const string &path) {
 
 Stats TesterGround::getStats() {
     return stats_;
+}
+
+void TesterGround::saveReport(const string &output_path) {
+    Stats stat = getStats();
+
+    // Open a file for the report
+    ofstream report;
+    report.open(output_path);
+    if(!report.is_open()) {
+        exit(-1);
+    }
+
+    // Save the report
+    report << stat;
+    report.close();
 }
 
 void TesterGround::saveOutput(const Mat &img, const string &item_name) {

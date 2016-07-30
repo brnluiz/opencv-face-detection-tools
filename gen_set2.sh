@@ -4,15 +4,18 @@
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 cd $DIR
 
-rm tmp/set2/images/*
+# Clean old set 2 images
+rm tmp/set2/images/*.jpg
 rm tmp/set2/set2.lst
+rm tmp/set2/report*.csv
 
+# Create set2 images folder, if it doesn't exist
 mkdir -p tmp/set2/images
-mv tmp/false-positives/* tmp/set2/images
+
+# Copy the false-positives + negative set
+mv tmp/set1/false-positives/*.jpg tmp/set2/images
 cp Data/train/neg/* tmp/set2/images
 
-rm tmp/*.jpg
-mv tmp/report.csv tmp/set2/report1.csv
-
+# Create the set2 image list
 cd tmp/set2
 find ./images -type f -maxdepth 1 > set2.lst

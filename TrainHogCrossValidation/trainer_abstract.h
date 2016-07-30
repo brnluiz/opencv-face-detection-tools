@@ -15,17 +15,33 @@ typedef vector<int> HogParam;
 typedef vector<HogParam> HogParamList;
 
 struct HogBest {
-    HOGDescriptor descriptor;
+    HogBest(): acc(0), descriptor(HOGDescriptor()) {
+        ;
+    }
+
     float acc;
+    HOGDescriptor descriptor;
 
     void print() {
-        TRAINERHOG_LOG << "Best HOG info:" << endl
+        TRAINERHOG_LOG << "Best HOG info" << endl
                      << " * Accuracy: " << acc << endl
                      << " * Block size: " << descriptor.blockSize << endl
                      << " * Cell size: " << descriptor.cellSize << endl
                      << " * Block stride: " << descriptor.blockStride << endl
                      << " * Win size: " << descriptor.winSize << endl
                      << endl;
+    }
+
+    friend std::ostream& operator<<(std::ostream& os, HogBest& hb) {
+        os << "Best HOG info" << endl
+           << "Accuracy, " << hb.acc << endl
+           << "Block size, " << hb.descriptor.blockSize << endl
+           << "Cell size, " << hb.descriptor.cellSize << endl
+           << "Block stride, " << hb.descriptor.blockStride << endl
+           << "Win size, " << hb.descriptor.winSize << endl
+           << endl;
+
+        return os;
     }
 };
 
