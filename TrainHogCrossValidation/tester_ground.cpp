@@ -29,6 +29,7 @@ void TesterGround::run() {
         double t1 = cv::getTickCount();
 
         // Test the detection accuracy checking each ground truth photo
+        int positives = 0;
         for(GroundTruthList::const_iterator ground = (*item).faces.begin(); ground < (*item).faces.end(); ground++) {
             // Get info about the specified face and plot it
             Point topleft_ground     = Point((*ground).x1, (*ground).y1);
@@ -55,7 +56,7 @@ void TesterGround::run() {
 
                     // Remove the detection from the detections vector (avoid it to test it again)
                     detections.erase(detection);
-                    stats_.positives++;
+                    positives++;
                     break;
                 }
 
@@ -68,8 +69,9 @@ void TesterGround::run() {
 
         }
 
+        stats_.positives       += positives;
         stats_.false_positives += detections.size();
-        cout << stats_.false_positives << endl;
+        stats_.false_negatives += (*item).faces.size() - positives;
 
         // Output the image to the results folder
         saveOutput(output_img, (*item).name);
