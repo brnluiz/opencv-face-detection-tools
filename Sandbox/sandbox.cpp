@@ -108,7 +108,7 @@ int main(int argc, char** argv) {
             cout << face.size().width << "x" << face.size().height << endl;
 
             // Output the distance of the detected face to the source
-            cout << "Distance from the source: " << distance.get(face) << "cm" << endl;
+            cout << "Distance from the source: " << distance.get(face, frame) << "cm" << endl;
             cout << "###" << endl;
 
             // Show the results window

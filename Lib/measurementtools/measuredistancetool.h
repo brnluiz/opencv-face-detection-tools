@@ -19,7 +19,7 @@ public:
     MeasureDistanceTool(const vector<float> &distancesCm, const vector<float> &widthsCm, const vector<float> &widthsPx);
     MeasureDistanceTool(const vector<MeasureDistanceParam> &params);
 
-    float get(const Rect &object);
+    float get(const Rect &object, const Mat &frame = Mat());
 
 protected:
     float calcFocalLength(const float &knownDistanceCm, const float &knownWidthCm, const int &knownWidthPixel);
@@ -27,6 +27,7 @@ protected:
 private:
     float focalLengthPx_;
     float knownWidthCm_;
+    int   knownWidthPx_;
 };
 
 #endif // MEASUREDISTANCETOOL_H

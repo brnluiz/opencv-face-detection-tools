@@ -1,9 +1,9 @@
 #include <stdexcept>
-
+#include <iostream>
 #include "measuredistancetool.h"
 
-MeasureDistanceTool::MeasureDistanceTool(const float &distanceCm, const float &widthCm, const float &widthPx) {
-    knownWidthCm_  = widthCm;
+MeasureDistanceTool::MeasureDistanceTool(const float &distanceCm, const float &widthCm, const float &widthPx):
+    knownWidthCm_(widthCm), knownWidthPx_(widthPx) {
     focalLengthPx_ = calcFocalLength(distanceCm, widthCm, widthPx);
 }
 
@@ -54,14 +54,35 @@ MeasureDistanceTool::MeasureDistanceTool(const vector<MeasureDistanceParam> &par
     knownWidthCm_  = widthSum / size;
 }
 
-float MeasureDistanceTool::get(const Rect &object) {
+float MeasureDistanceTool::get(const Rect &object, const Mat &frame) {
     float objWidthPx = object.size().width;
+    cout << object.tl() << endl;
+    cout << object.br() << endl;
+
 
     if (objWidthPx == 0) {
         throw length_error("Rectangle width is 0 (empty detection)");
     }
 
-    return (knownWidthCm_ * focalLengthPx_) / objWidthPx;
+    float distance = (knownWidthCm_ * focalLengthPx_) / objWidthPx;
+
+    if(frame.empty()) {
+        return distance;
+    }
+
+    // Get how much the detection deviate from the centre of frame
+    Point frame_centre = Point(frame.size().width/2, frame.size().height/2);
+    Point object_centre = Point(object.tl().x + object.size().width/2,
+                                object.tl().y + object.size().height/2);
+
+    float deviation_from_centre_px = (float)abs(frame_centre.y - object_centre.y);
+    float deviation_from_centre_cm = (knownWidthCm_/knownWidthPx_) * deviation_from_centre_px;
+
+    // Calculate the fixed distance based on c^2 = a^2 + b^2
+    float distance_fixed = sqrt(distance*distance + deviation_from_centre_cm);
+
+    return distance_fixed;
+
 }
 
 float MeasureDistanceTool::calcFocalLength(const float &knownDistanceCm, const float &knownWidthCm, const int &knownWidthPixel) {
