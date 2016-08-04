@@ -8,7 +8,7 @@
 
 using namespace std;
 
-SourceHandler *SourceHandlerFactory::make(string source) {
+SourceHandler *SourceHandlerFactory::make(const string &source) {
     if (source == "cam") {
         return new CamHandler("default");
     }

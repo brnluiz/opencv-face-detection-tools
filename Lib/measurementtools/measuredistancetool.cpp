@@ -2,12 +2,13 @@
 
 #include "measuredistancetool.h"
 
-MeasureDistanceTool::MeasureDistanceTool(float distanceCm, float widthCm, float widthPx) {
+MeasureDistanceTool::MeasureDistanceTool(const float &distanceCm, const float &widthCm, const float &widthPx) {
     knownWidthCm_  = widthCm;
     focalLengthPx_ = calcFocalLength(distanceCm, widthCm, widthPx);
 }
 
-MeasureDistanceTool::MeasureDistanceTool(vector<float> distancesCm, vector<float> widthsCm, vector<float> widthsPx) {
+MeasureDistanceTool::MeasureDistanceTool(const vector<float>& distancesCm, const vector<float>& widthsCm,
+                                         const vector<float>& widthsPx) {
     if(distancesCm.size() != widthsCm.size() || distancesCm.size() != widthsPx.size() || widthsCm.size() == widthsPx.size()) {
         throw length_error("Vectors of different sizes");
     }
@@ -30,7 +31,7 @@ MeasureDistanceTool::MeasureDistanceTool(vector<float> distancesCm, vector<float
 
 }
 
-MeasureDistanceTool::MeasureDistanceTool(vector<MeasureDistanceParam> params) {
+MeasureDistanceTool::MeasureDistanceTool(const vector<MeasureDistanceParam> &params) {
     if(params.size() == 0) {
         throw invalid_argument("Params argument is empty");
     }
@@ -40,7 +41,7 @@ MeasureDistanceTool::MeasureDistanceTool(vector<MeasureDistanceParam> params) {
     int size = params.size();
 
     // Get the focal length for each sample
-    vector<MeasureDistanceParam>::iterator it;
+    vector<MeasureDistanceParam>::const_iterator it;
     for(it = params.begin(); it < params.end(); it++) {
         float focalLength = calcFocalLength((*it).distanceCm, (*it).widthCm, (*it).widthPx);
 
@@ -53,7 +54,7 @@ MeasureDistanceTool::MeasureDistanceTool(vector<MeasureDistanceParam> params) {
     knownWidthCm_  = widthSum / size;
 }
 
-float MeasureDistanceTool::get(Rect object) {
+float MeasureDistanceTool::get(const Rect &object) {
     float objWidthPx = object.size().width;
 
     if (objWidthPx == 0) {
@@ -63,7 +64,7 @@ float MeasureDistanceTool::get(Rect object) {
     return (knownWidthCm_ * focalLengthPx_) / objWidthPx;
 }
 
-float MeasureDistanceTool::calcFocalLength(float knownDistanceCm, float knownWidthCm, int knownWidthPixel) {
+float MeasureDistanceTool::calcFocalLength(const float &knownDistanceCm, const float &knownWidthCm, const int &knownWidthPixel) {
     float focalLength = (knownWidthPixel * knownDistanceCm) / knownWidthCm;
     return focalLength;
 }

@@ -10,17 +10,17 @@ using namespace cv;
 
 class Viewer {
 public:
-    Viewer(string name);
+    Viewer(const string &name);
 
-    void setFrame(Mat frame);
+    void setFrame(const Mat &frame);
 
-    void draw(vector<Rect> rois, Scalar color = Scalar(0, 255, 0));
+    void draw(const vector<Rect> &rois, const Scalar &color = Scalar(0, 255, 0));
 
     void show();
 
     void reset();
 
-    void save(string path);
+    void save(const string &path);
 
 private:
     Mat frame_;

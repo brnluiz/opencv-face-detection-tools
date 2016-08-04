@@ -20,12 +20,12 @@ using namespace cv;
 using namespace cv::ml;
 using namespace std;
 
-HogSvmDetector::HogSvmDetector(DetectorParams params): ObjectDetector(params) {
+HogSvmDetector::HogSvmDetector(const DetectorParams &params): ObjectDetector(params) {
     setParams(params);
     reset();
 }
 
-void HogSvmDetector::setParams(DetectorParams params) {
+void HogSvmDetector::setParams(const DetectorParams &params) {
     if(!params.isOpened()) {
         throw invalid_argument("Parameters file not loaded");
     }
@@ -83,7 +83,7 @@ void HogSvmDetector::reset() {
     hog_.setSVMDetector(detector);
 }
 
-vector<Rect> HogSvmDetector::detect(Mat &frame) {
+vector<Rect> HogSvmDetector::detect(const Mat &frame) {
     frame_ = frame;
 
     // Detect faces

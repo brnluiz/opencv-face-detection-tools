@@ -12,15 +12,13 @@ using namespace cv;
 
 class CascadeDetector: public ObjectDetector{
 public:
-    CascadeDetector(string window);
-    CascadeDetector(DetectorParams params);
-    CascadeDetector(string window, DetectorParams params);
+    CascadeDetector(const DetectorParams &params);
 
-    vector<Rect> detect(Mat& frame);
+    vector<Rect> detect(const Mat& frame);
     void reset();
 
 protected:
-    void setParams(DetectorParams params);
+    void setParams(const DetectorParams &params);
 private:
     CascadeClassifier classifier_;
 };

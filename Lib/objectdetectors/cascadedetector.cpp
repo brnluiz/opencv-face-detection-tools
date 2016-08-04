@@ -7,7 +7,7 @@
 
 #include "cascadedetector.h"
 
-CascadeDetector::CascadeDetector(DetectorParams params): ObjectDetector(params) {
+CascadeDetector::CascadeDetector(const DetectorParams &params): ObjectDetector(params) {
     setParams(params);
     reset();
 }
@@ -18,7 +18,7 @@ void CascadeDetector::reset() {
     };
 }
 
-void CascadeDetector::setParams(DetectorParams params) {
+void CascadeDetector::setParams(const DetectorParams &params) {
     if(!params.isOpened()) {
         throw invalid_argument("Parameters file not loaded");
     }
@@ -27,7 +27,7 @@ void CascadeDetector::setParams(DetectorParams params) {
     model_ = (string)params["model"];
 }
 
-vector<Rect> CascadeDetector::detect(Mat &frame) {
+vector<Rect> CascadeDetector::detect(const Mat &frame) {
     frame_ = frame;
 
     Mat frame_gray;

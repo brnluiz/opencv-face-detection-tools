@@ -8,7 +8,7 @@
 
 using namespace std;
 
-ObjectDetector *ObjectDetectorFactory::make(string type, DetectorParams params) {
+ObjectDetector *ObjectDetectorFactory::make(const string &type, const DetectorParams &params) {
     if (type == "hogsvm") {
         return new HogSvmDetector(params);
     }

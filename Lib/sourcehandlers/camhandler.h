@@ -13,10 +13,10 @@ using namespace std;
 class CamHandler: public SourceHandler {
 public:
     CamHandler();
-    CamHandler(string source);
+    CamHandler(const string &source);
     ~CamHandler();
 
-    void open(string source = "default");
+    void open(const string &source = "default");
 
     Mat get();
 

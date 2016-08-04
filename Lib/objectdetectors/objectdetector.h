@@ -13,12 +13,12 @@ typedef FileStorage DetectorParams;
 typedef vector<Rect> Objects;
 class ObjectDetector {
 public:
-    ObjectDetector(DetectorParams params);
+    ObjectDetector(const DetectorParams &params);
     virtual ~ObjectDetector();
 
     virtual void reset() = 0;
-    virtual Objects detect(Mat& frame) = 0;
-    virtual void setParams(DetectorParams params) = 0;
+    virtual Objects detect(const Mat& frame) = 0;
+    virtual void setParams(const DetectorParams &params) = 0;
 
     Mat getFrame();
 protected:

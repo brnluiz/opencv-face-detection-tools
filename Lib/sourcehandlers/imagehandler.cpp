@@ -13,14 +13,14 @@ ImageHandler::ImageHandler(): SourceHandler() {
     type_ = Type::Image;
 }
 
-ImageHandler::ImageHandler(string source): SourceHandler(source) {
+ImageHandler::ImageHandler(const string &source): SourceHandler(source) {
     type_ = Type::Image;
     open(source);
 }
 
 ImageHandler::~ImageHandler() {}
 
-void ImageHandler::open(string source) {
+void ImageHandler::open(const string &source) {
     file_ = imread(source, CV_LOAD_IMAGE_COLOR);
 
     if(file_.empty()) {

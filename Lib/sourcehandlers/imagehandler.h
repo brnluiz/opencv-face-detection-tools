@@ -12,10 +12,10 @@ using namespace cv;
 class ImageHandler: public SourceHandler {
 public:
     ImageHandler();
-    ImageHandler(string source);
+    ImageHandler(const string &source);
     ~ImageHandler();
 
-    void open(string source);
+    void open(const string &source);
     Mat get();
 
 private:

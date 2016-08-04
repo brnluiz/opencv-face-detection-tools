@@ -13,14 +13,12 @@ using namespace cv::ml;
 
 class HogSvmDetector: public ObjectDetector {
 public:
-    HogSvmDetector(string window);
-    HogSvmDetector(DetectorParams params);
-    HogSvmDetector(string window, DetectorParams params);
+    HogSvmDetector(const DetectorParams &params);
 
-    Objects detect(Mat& frame);
+    Objects detect(const Mat& frame);
     void reset();
 protected:
-    void setParams(DetectorParams params);
+    void setParams(const DetectorParams &params);
 private:
     vector<float> getDetector();
     int nonMaximumSuppression(int numBoxes, Point *points,

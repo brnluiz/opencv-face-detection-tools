@@ -15,14 +15,14 @@ struct MeasureDistanceParam {
 
 class MeasureDistanceTool {
 public:
-    MeasureDistanceTool(float distanceCm, float widthCm, float widthPx);
-    MeasureDistanceTool(vector<float> distancesCm, vector<float> widthsCm, vector<float> widthsPx);
-    MeasureDistanceTool(vector<MeasureDistanceParam> params);
+    MeasureDistanceTool(const float &distanceCm, const float &widthCm, const float &widthPx);
+    MeasureDistanceTool(const vector<float> &distancesCm, const vector<float> &widthsCm, const vector<float> &widthsPx);
+    MeasureDistanceTool(const vector<MeasureDistanceParam> &params);
 
-    float get(Rect object);
+    float get(const Rect &object);
 
 protected:
-    float calcFocalLength(float knownDistanceCm, float knownWidthCm, int knownWidthPixel);
+    float calcFocalLength(const float &knownDistanceCm, const float &knownWidthCm, const int &knownWidthPixel);
 
 private:
     float focalLengthPx_;

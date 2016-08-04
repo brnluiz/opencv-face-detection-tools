@@ -2,7 +2,7 @@
 
 #include "objectdetector.h"
 
-ObjectDetector::ObjectDetector(DetectorParams params): params_(params) {
+ObjectDetector::ObjectDetector(const DetectorParams &params): params_(params) {
 }
 
 ObjectDetector::~ObjectDetector() {

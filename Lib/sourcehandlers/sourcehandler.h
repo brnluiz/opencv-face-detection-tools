@@ -10,11 +10,11 @@ using namespace cv;
 class SourceHandler {
 public:
     SourceHandler(): finished_(0) {;}
-    SourceHandler(string source): finished_(0), source_(source) {
+    SourceHandler(const string &source): finished_(0), source_(source) {
     }
     virtual ~SourceHandler() {}
 
-    virtual void open(string source) = 0;
+    virtual void open(const string &source) = 0;
     virtual Mat get() = 0;
 
     bool isFinished() { return finished_; }

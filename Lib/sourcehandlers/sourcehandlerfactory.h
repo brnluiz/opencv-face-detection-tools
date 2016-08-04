@@ -11,7 +11,7 @@ using namespace std;
 
 class SourceHandlerFactory {
 public:
-    SourceHandler* make(string source);
+    SourceHandler* make(const string &source);
 };
 
 #endif // SOURCEHANDLERFACTORY_H

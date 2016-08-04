@@ -6,14 +6,14 @@ CamHandler::CamHandler(): SourceHandler() {
     type_ = Type::Cam;
 }
 
-CamHandler::CamHandler(string source): SourceHandler(source) {
+CamHandler::CamHandler(const string &source): SourceHandler(source) {
     type_ = Type::Cam;
     open(source);
 }
 
 CamHandler::~CamHandler() {}
 
-void CamHandler::open(string source) {
+void CamHandler::open(const string &source) {
     int id = 0;
 
     // Convert the source string to an recognizable ID
