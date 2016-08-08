@@ -21,6 +21,8 @@ void print_vector(vector<T> & v) {
     cout << "]" << endl;
 }
 
+#define PROJECT_PATH (string)"/Users/brunoluiz/Git/opencv-face-detection-tools/"
+
 int main() {
 
     // Use the following block of code if you need to test anything without doing the whole training
@@ -42,8 +44,8 @@ int main() {
     };
 
     MAIN_LOG << "Loading images sets..." << endl;
-    DataSet pos_set("/home/brunoluiz/qt/FaceDetectionTools/Data/train/", "caltech.lst");
-    DataSet neg_set("/home/brunoluiz/qt/FaceDetectionTools/Data/train/", "neg.lst", Size(32,32));
+    DataSet pos_set(PROJECT_PATH+"Data/train/", "caltech.lst");
+    DataSet neg_set(PROJECT_PATH+"Data/train/", "neg.lst", Size(32,32));
     vector<Mat> pos = pos_set.get();
     vector<Mat> neg = neg_set.get();
     MAIN_LOG << "Finished loading!" << endl;
@@ -53,12 +55,12 @@ int main() {
     // --------------------------------------------------------------------------------------------
 
     // This is not a good way to program: if you continue like this, you are not going to receive xmas gifts
-    system("/home/brunoluiz/qt/FaceDetectionTools/clean.sh");
+    system((PROJECT_PATH+"clean.sh").c_str());
 
     MAIN_LOG << "- First step: choosing the best HOG parameters" << endl;
     TrainerHog hog_train(pos, neg, 10, params);
     hog_train.run();
-    hog_train.saveReport("/home/brunoluiz/qt/FaceDetectionTools/tmp/besthog.csv");
+    hog_train.saveReport(PROJECT_PATH+"tmp/besthog.csv");
 
     HogBest hog_best = hog_train.getBest();
     hog_best.print();
@@ -74,21 +76,21 @@ int main() {
     // --------------------------------------------------------------------------------------------
 
     MAIN_LOG << " - Third step: testing against the test set #1 to get false positives" << endl;
-    TesterGround tester1("/home/brunoluiz/qt/FaceDetectionTools/Data/test/set1/",
-                        "/home/brunoluiz/qt/FaceDetectionTools/Data/test/ground_truth_set1.csv",
-                        "/home/brunoluiz/qt/FaceDetectionTools/tmp/set1/",
+    TesterGround tester1(PROJECT_PATH+"Data/test/set1/",
+                        PROJECT_PATH+"Data/test/ground_truth_set1.csv",
+                        PROJECT_PATH+"tmp/set1/",
                         hog_best.descriptor, svm);
     tester1.run();
-    tester1.saveReport("/home/brunoluiz/qt/FaceDetectionTools/tmp/set1/report_set1.csv");
+    tester1.saveReport(PROJECT_PATH+"tmp/set1/report_set1.csv");
 
     // --------------------------------------------------------------------------------------------
 
     // This is not a good way to program: if you continue like this, you are not going to receive xmas gifts
-    system("/home/brunoluiz/qt/FaceDetectionTools/gen_set2.sh");
+    system((PROJECT_PATH+"gen_set2.sh").c_str());
 
     MAIN_LOG << " - Forth step: retrain using the new false positives samples (hard negative training)" << endl;
     // Loads the negative samples + hard negative mining samples
-    DataSet hard_set("/home/brunoluiz/qt/FaceDetectionTools/tmp/set2/", "set2.lst", Size(32,32));
+    DataSet hard_set(PROJECT_PATH+"tmp/set2/", "set2.lst", Size(32,32));
     vector<Mat> hard = hard_set.get();
 
     // Train the SVM again
@@ -100,12 +102,12 @@ int main() {
     // --------------------------------------------------------------------------------------------
 
     MAIN_LOG << " - Final step: testing against the test set #2" << endl;
-    TesterGround tester2("/home/brunoluiz/qt/FaceDetectionTools/Data/test/set2/",
-                        "/home/brunoluiz/qt/FaceDetectionTools/Data/test/ground_truth_set2.csv",
-                        "/home/brunoluiz/qt/FaceDetectionTools/tmp/",
+    TesterGround tester2(PROJECT_PATH+"Data/test/set2/",
+                        PROJECT_PATH+"Data/test/ground_truth_set2.csv",
+                        PROJECT_PATH+"tmp/set2/",
                         hog_best.descriptor, svm_hard);
     tester2.run();
-    tester2.saveReport("/home/brunoluiz/qt/FaceDetectionTools/tmp/set2/report_set2.csv");
+    tester2.saveReport(PROJECT_PATH+"tmp/set2/report_set2.csv");
 
     MAIN_LOG << "~ Finished processing" << endl;
 

@@ -4,13 +4,15 @@
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 cd $DIR
 
+# Create set2 images folder, if it doesn't exist
+mkdir -p tmp/set2
+mkdir -p tmp/set2/images
+
 # Clean old set 2 images
 rm tmp/set2/images/*.jpg
 rm tmp/set2/set2.lst
 rm tmp/set2/report*.csv
-
-# Create set2 images folder, if it doesn't exist
-mkdir -p tmp/set2/images
+rm tmp/set2/*.jpg
 
 # Copy the false-positives + negative set
 mv tmp/set1/false-positives/*.jpg tmp/set2/images
