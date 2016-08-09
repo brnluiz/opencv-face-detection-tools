@@ -61,7 +61,6 @@ void DataSet::loadImages(const string &prefix, const string &filename, const Siz
 
     // Copy the actual list and clear the actual list
     const vector<Mat> original_lst = img_lst_;
-    img_lst_.clear();
 
     // Process the original list and get small cuts from it
     for(vector<Mat>::const_iterator img = original_lst.begin(); img < original_lst.end(); img++ ) {

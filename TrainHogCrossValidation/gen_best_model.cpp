@@ -39,7 +39,7 @@ int main() {
     vector<vector<int>> params = {
         {8,16},   // Block size
         {4,8,16}, // Cell size
-        {8,16},   // Block stride
+        {4,8,16},   // Block stride
         {32},     // Win size
     };
 

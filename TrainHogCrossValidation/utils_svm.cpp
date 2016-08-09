@@ -41,19 +41,19 @@ namespace SvmUtils {
 
         svm->setType(SVM::EPS_SVR); // C_SVC; // EPSILON_SVR; // may be also NU_SVR; // do regression task
         svm->setKernel(SVM::LINEAR);
-        svm->setTermCriteria(TermCriteria(CV_TERMCRIT_ITER+CV_TERMCRIT_EPS, 1000, 1e-6 ));
+        svm->setTermCriteria(TermCriteria(CV_TERMCRIT_ITER, 1000, 1e-6 ));
 
         /* Default values to train SVM */
-        svm->setC(0.01); // (C_SVC / EPS_SVR / NU_SVR)
-        svm->setP(0.1);  // (EPS_SVR)
+        svm->setC(10); // (C_SVC / EPS_SVR / NU_SVR)
+        svm->setP(0.05);  // (EPS_SVR)
 
         /* Not used for EPS_SVR */
-        svm->setNu(0.5); // (NU_SVC / ONE_CLASS / NU_SVR)
+        svm->setNu(0); // (NU_SVC / ONE_CLASS / NU_SVR)
 
         /* Not used for Linear Kernel */
-        svm->setDegree(3);   // (POLY)
+        svm->setDegree(0);   // (POLY)
         svm->setCoef0(0.0);  // (POLY / SIGMOID)
-        svm->setGamma(0.01); // (POLY / RBF / SIGMOID / CHI2)
+        svm->setGamma(0.0); // (POLY / RBF / SIGMOID / CHI2)
 
         if (!automatic) {
             svm->train(train);

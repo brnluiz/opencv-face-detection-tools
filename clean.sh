@@ -6,8 +6,9 @@ cd $DIR
 
 echo $DIR
 
+# Clean the dir
+rm -rf tmp/set1
+
+# Make the dir
 mkdir -p tmp/set1
 mkdir -p tmp/set1/false-positives
-
-rm tmp/set1/*.jpg
-rm tmp/set1/false-positives/*.jpg
