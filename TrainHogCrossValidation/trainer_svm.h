@@ -1,7 +1,7 @@
 #ifndef SVMTRAIN_H
 #define SVMTRAIN_H
 
-#include "stats.h"
+#include "performance_test.h"
 #include "kfold.h"
 
 #include "trainer_abstract.h"

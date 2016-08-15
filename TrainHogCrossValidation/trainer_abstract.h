@@ -6,6 +6,7 @@
 
 #include "kfold.h"
 #include "log.h"
+#include "stats.h"
 
 using namespace std;
 using namespace cv;
@@ -15,11 +16,11 @@ typedef vector<int> HogParam;
 typedef vector<HogParam> HogParamList;
 
 struct HogBest {
-    HogBest(): acc(0), descriptor(HOGDescriptor()) {
+    HogBest(): descriptor(HOGDescriptor()) {
         ;
     }
 
-    float acc;
+    Stats stat;
     HOGDescriptor descriptor;
 
     void print() {

@@ -6,7 +6,7 @@
 #include <opencv2/opencv.hpp>
 
 #include "utils_svm.h"
-#include "stats.h"
+#include "performance_test.h"
 #include "log.h"
 
 using namespace std;
