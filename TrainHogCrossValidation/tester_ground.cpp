@@ -23,10 +23,10 @@ void TesterGround::run() {
         Mat output_img = img.clone();
 
         // Make the detection for this test item
-        double t0 = cv::getTickCount();
+//        double t0 = cv::getTickCount();
         vector<Rect> detections;
         hog_.detectMultiScale(img, detections);
-        double t1 = cv::getTickCount();
+//        double t1 = cv::getTickCount();
 
         // Test the detection accuracy checking each ground truth photo
         int positives = 0;

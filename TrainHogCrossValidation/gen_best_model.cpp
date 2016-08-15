@@ -31,8 +31,8 @@ int main() {
 //    hog.blockStride = Size(16,16);
 //    hog.cellSize    = Size(16,16);
 //    hog.winSize     = Size(32,32);
-//    HogBest hog_best;
-//    hog_best.descriptor = hog;
+//    HogBest best_hog;
+//    best_hog.descriptor = hog;
 //    Ptr<SVM> svm = SVM::load<SVM>("best-svm.xml");
 
     // HOG Parameters (which will be combined and tested)
@@ -60,18 +60,21 @@ int main() {
     MAIN_LOG << "- First step: choosing the best HOG parameters" << endl;
     TrainerHog hog_train(pos, neg, 10, params);
     hog_train.run();
-    hog_train.saveReport(PROJECT_PATH+"tmp/besthog.csv");
+    hog_train.saveReport(PROJECT_PATH+"tmp/best-hog.csv");
 
-    HogBest hog_best = hog_train.getBest();
-    hog_best.print();
+    BestHog best_hog = hog_train.getBest();
+    cout << best_hog;
 
     // --------------------------------------------------------------------------------------------
 
     MAIN_LOG << "- Second step: choosing best SVM parameters" << endl;
-    TrainerSvm svm_train(pos, neg, 10, hog_best.descriptor);
+    TrainerSvm svm_train(pos, neg, 10, best_hog.descriptor);
     svm_train.run();
-    Ptr<SVM> svm = svm_train.getBest();
-    svm->save("best-svm.xml");
+    svm_train.saveReport(PROJECT_PATH+"tmp/best-svm.csv");
+    BestSvm best_svm = svm_train.getBest();
+
+    Ptr<SVM> svm = best_svm.svm;
+    svm->save(PROJECT_PATH+"tmp/best-svm.xml");
 
     // --------------------------------------------------------------------------------------------
 
@@ -79,7 +82,7 @@ int main() {
     TesterGround tester1(PROJECT_PATH+"Data/test/set1/",
                         PROJECT_PATH+"Data/test/ground_truth_set1.csv",
                         PROJECT_PATH+"tmp/set1/",
-                        hog_best.descriptor, svm);
+                        best_hog.descriptor, svm);
     tester1.run();
     tester1.saveReport(PROJECT_PATH+"tmp/set1/report_set1.csv");
 
@@ -94,10 +97,13 @@ int main() {
     vector<Mat> hard = hard_set.get();
 
     // Train the SVM again
-    TrainerSvm svm_train_hard(pos, hard, 10, hog_best.descriptor);
+    TrainerSvm svm_train_hard(pos, hard, 10, best_hog.descriptor);
     svm_train_hard.run();
-    Ptr<SVM> svm_hard = svm_train_hard.getBest();
-    svm_hard->save("best-svm-hard.xml");
+    svm_train.saveReport(PROJECT_PATH+"tmp/best-svm-hard.csv");
+    best_svm = svm_train_hard.getBest();
+
+    Ptr<SVM> svm_hard = best_svm.svm;
+    svm_hard->save(PROJECT_PATH+"best-svm-hard.xml");
 
     // --------------------------------------------------------------------------------------------
 
@@ -105,7 +111,7 @@ int main() {
     TesterGround tester2(PROJECT_PATH+"Data/test/set2/",
                         PROJECT_PATH+"Data/test/ground_truth_set2.csv",
                         PROJECT_PATH+"tmp/set2/",
-                        hog_best.descriptor, svm_hard);
+                        best_hog.descriptor, svm_hard);
     tester2.run();
     tester2.saveReport(PROJECT_PATH+"tmp/set2/report_set2.csv");
 

@@ -6,7 +6,7 @@
 
 using namespace std;
 
-struct AverßagedStats {
+struct AveragedStats {
 public:
     AveragedStats();
 
@@ -26,6 +26,16 @@ public:
     void clear();
 
     vector<Stats> items_;
+
+    friend std::ostream& operator<<(std::ostream& os, AveragedStats& avg) {
+        os << "Folds, " << avg.items_.size() << endl
+           << "Accuracy, " << avg.getAccuracy() << endl
+           << "Precision, " << avg.getPrecision() << endl
+           << "Recall, " << avg.getRecall() << endl
+           << "FScore, " << avg.getFScore() << endl;
+
+        return os;
+    }
 };
 
 #endif // AVERAGEDSTATS_H

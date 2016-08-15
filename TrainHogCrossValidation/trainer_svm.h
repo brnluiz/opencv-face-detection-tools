@@ -5,33 +5,7 @@
 #include "kfold.h"
 
 #include "trainer_abstract.h"
-
-struct SvmBest {
-    SvmBest(): acc(0) {
-        ;
-    }
-
-    float acc;
-    Ptr<SVM> svm;
-
-//    void print() {
-
-//    }
-
-    friend std::ostream& operator<<(std::ostream& os, SvmBest& sb) {
-        os << "Best SVM info" << endl
-           << "Accuracy, " << sb.acc << endl
-           << "C, " << sb.svm->getC() << endl
-           << "P, " << sb.svm->getP() << endl
-           << "Nu, " << sb.svm->getNu() << endl
-           << "Degree, " << sb.svm->getDegree() << endl
-           << "Coef0, " << sb.svm->getCoef0() << endl
-           << endl;
-
-        return os;
-    }
-
-};
+#include "best_svm.h"
 
 class TrainerSvm: public TrainerAbstract {
 public:
@@ -39,12 +13,13 @@ public:
     TrainerSvm(vector<Mat>& pos, vector<Mat>& neg, const int& folds, const HogParam& param);
 
     void run();
+    void saveReport(const string & output_path);
 
-    Ptr<SVM> getBest();
+    BestSvm getBest();
 
 private:
     HOGDescriptor hog_;
-    SvmBest bestsvm_;
+    BestSvm best_;
 };
 
 #endif // SVMTRAIN_H

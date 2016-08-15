@@ -3,9 +3,10 @@
 
 #include <vector>
 
-#include "stats.h"
+#include "performance_test.h"
 #include "kfold.h"
 #include "trainer_abstract.h"
+#include "best_hog.h"
 
 using namespace std;
 using namespace cv;
@@ -18,7 +19,7 @@ public:
     void run();
     void saveReport(const string & output_path);
 
-    HogBest getBest();
+    BestHog getBest();
 
 private:
     void combineVector (
@@ -30,8 +31,7 @@ private:
 
 protected:
     HogParamList params_;
-
-    HogBest besthog_;
+    BestHog best_;
 };
 
 #endif // HOGTRAIN_H

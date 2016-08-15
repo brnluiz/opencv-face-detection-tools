@@ -6,7 +6,6 @@
 
 #include "kfold.h"
 #include "log.h"
-#include "stats.h"
 
 using namespace std;
 using namespace cv;
@@ -14,37 +13,6 @@ using namespace cv::ml;
 
 typedef vector<int> HogParam;
 typedef vector<HogParam> HogParamList;
-
-struct HogBest {
-    HogBest(): descriptor(HOGDescriptor()) {
-        ;
-    }
-
-    Stats stat;
-    HOGDescriptor descriptor;
-
-    void print() {
-        TRAINERHOG_LOG << "Best HOG info" << endl
-                     << " * Accuracy: " << acc << endl
-                     << " * Block size: " << descriptor.blockSize << endl
-                     << " * Cell size: " << descriptor.cellSize << endl
-                     << " * Block stride: " << descriptor.blockStride << endl
-                     << " * Win size: " << descriptor.winSize << endl
-                     << endl;
-    }
-
-    friend std::ostream& operator<<(std::ostream& os, HogBest& hb) {
-        os << "Best HOG info" << endl
-           << "Accuracy, " << hb.acc << endl
-           << "Block size, " << hb.descriptor.blockSize << endl
-           << "Cell size, " << hb.descriptor.cellSize << endl
-           << "Block stride, " << hb.descriptor.blockStride << endl
-           << "Win size, " << hb.descriptor.winSize << endl
-           << endl;
-
-        return os;
-    }
-};
 
 enum HogParamTypes {
     BLOCK_SIZE,
@@ -65,6 +33,7 @@ public:
     TrainerAbstract(vector<Mat>& pos, vector<Mat>& neg, int folds = 10);
 
     virtual void run() = 0;
+    virtual void saveReport(const string &path) = 0;
 
     void setFolds(int k);
 

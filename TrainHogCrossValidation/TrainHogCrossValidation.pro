@@ -49,4 +49,6 @@ HEADERS += \
     trainer_abstract.h \
     performance_test.h \
     stats.h \
-    averaged_stats.h
+    averaged_stats.h \
+    best_svm.h \
+    best_hog.h

@@ -1,22 +1,20 @@
 #include "performance_test.h"
 
-PerformanceTest::PerformanceTest(): positives(0), negatives(0), false_positives(0), false_negatives(0),
-    pos_(vector<Mat>()), neg_(vector<Mat>()), stat_(Stats()) {
+PerformanceTest::PerformanceTest(): pos_(vector<Mat>()), neg_(vector<Mat>()), stat_(Stats()) {
     ;
 }
 
-PerformanceTest::PerformanceTest(const HOGDescriptor &hog): positives(0), negatives(0), false_positives(0), false_negatives(0), hog_(hog),
-    pos_(vector<Mat>()), neg_(vector<Mat>()), stat_(Stats()) {
+PerformanceTest::PerformanceTest(const HOGDescriptor &hog): hog_(hog), pos_(vector<Mat>()), neg_(vector<Mat>()), stat_(Stats()) {
     ;
 }
 
 PerformanceTest::PerformanceTest(const HOGDescriptor &hog, const vector<Mat> &pos, const vector<Mat> &neg):
-    positives(0), negatives(0), false_positives(0), false_negatives(0), hog_(hog), pos_(pos), neg_(neg), stat_(Stats()) {
+    hog_(hog), pos_(pos), neg_(neg), stat_(Stats()) {
     ;
 }
 
 PerformanceTest::PerformanceTest(const HOGDescriptor &hog, const vector<SampleInfo> &pos, const vector<SampleInfo> &neg):
-    positives(0), negatives(0), false_positives(0), false_negatives(0), hog_(hog), stat_(Stats()) {
+    hog_(hog), stat_(Stats()) {
 
     vector<SampleInfo>::const_iterator info;
     for(info = pos.begin(); info < pos.end(); info++) {

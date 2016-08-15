@@ -2,17 +2,16 @@
 
 #include <fstream>
 
+#include "averaged_stats.h"
+#include "performance_test.h"
 #include "log.h"
 #include "utils_hog.h"
 #include "utils_svm.h"
 
-TrainerHog::TrainerHog(vector<Mat> &pos, vector<Mat> &neg, const int &folds, HogParamList params): TrainerAbstract(pos, neg, folds) {
+TrainerHog::TrainerHog(vector<Mat> &pos, vector<Mat> &neg, const int &folds, HogParamList params): TrainerAbstract(pos, neg, folds), best_(BestHog()) {
     // Generate the parameters combinations
     vector<int> temp;
     combineVector(params_, params, temp);
-
-    besthog_.descriptor = HOGDescriptor();
-    besthog_.acc = 0;
 }
 
 void TrainerHog::run() {
@@ -45,7 +44,7 @@ void TrainerHog::run() {
         Kfold<vector<SampleInfo>::const_iterator> kf_neg(folds_, neg_set.begin(), neg_set.end());
 
         // Cross-validation
-        float acc = 0;
+        AveragedStats avg_stats;
         TRAINERHOG_LOG << "- Cross validating..." << endl;
         for (int fold = 0; fold != folds_; fold++) {
             TRAINERHOG_LOG << " * Fold #" << fold+1 << ": training..."<< endl;
@@ -70,26 +69,23 @@ void TrainerHog::run() {
 
             // Test the actual setting using the test set
             TRAINERHOG_LOG << " * Fold #" << fold+1 << ": testing..." << endl;
-            Stats stat(hog, test_pos, test_neg);
-            stat.test();
+            PerformanceTest tester(hog, test_pos, test_neg);
+            tester.test();
 
             // Save the accuracy
-            acc += stat.getAccuracy();
-
-            TRAINERHOG_LOG << " + Fold #" << fold+1 << " accuracy: " << stat.getAccuracy() << endl;
+            avg_stats.insert(tester.getStats());
         }
 
-        // Average accuracy (based on the number of folds)
-        acc = acc / folds_;
-        TRAINERHOG_LOG << "- Final accuracy: " << acc << endl << endl;
+        TRAINERHOG_LOG << "Average results: " << endl;
+        cout << avg_stats;
 
         // If the average accuracy is better than the last parameter set, then save it
-        if (acc > besthog_.acc) {
-            besthog_.descriptor = hog;
-            besthog_.acc = acc;
+        if (avg_stats.getFScore() > best_.stat.getFScore()) {
+            best_.descriptor = hog;
+            best_.stat = avg_stats;
 
             TRAINERHOG_LOG << "New best HOG!" << endl;
-            besthog_.print();
+            cout << best_;
         }
     }
 }
@@ -103,12 +99,12 @@ void TrainerHog::saveReport(const string &output_path) {
     }
 
     // Save the report
-    report << besthog_;
+    report << best_;
     report.close();
 }
 
-HogBest TrainerHog::getBest() {
-    return besthog_;
+BestHog TrainerHog::getBest() {
+    return best_;
 }
 
 void TrainerHog::combineVector(vector<vector<int> > &output_perms, const vector<vector<int> > &input, vector<int> &cur_perm, unsigned cur_row) {

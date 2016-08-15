@@ -1,5 +1,9 @@
 #include "trainer_svm.h"
 
+#include <fstream>
+
+#include "averaged_stats.h"
+#include "performance_test.h"
 #include "log.h"
 #include "utils_hog.h"
 #include "utils_svm.h"
@@ -44,43 +48,6 @@ void TrainerSvm::run() {
     double coef0 = 0;
     double degree = 0;
 
-//    if( param_id == SVM::C )
-//    {
-//        grid.minVal = 0.1;
-//        grid.maxVal = 500;
-//        grid.logStep = 5; // total iterations = 5
-//    }
-//    else if( param_id == SVM::GAMMA )
-//    {
-//        grid.minVal = 1e-5;
-//        grid.maxVal = 0.6;
-//        grid.logStep = 15; // total iterations = 4
-//    }
-//    else if( param_id == SVM::P )
-//    {
-//        grid.minVal = 0.01;
-//        grid.maxVal = 100;
-//        grid.logStep = 7; // total iterations = 4
-//    }
-//    else if( param_id == SVM::NU )
-//    {
-//        grid.minVal = 0.01;
-//        grid.maxVal = 0.2;
-//        grid.logStep = 3; // total iterations = 3
-//    }
-//    else if( param_id == SVM::COEF )
-//    {
-//        grid.minVal = 0.1;
-//        grid.maxVal = 300;
-//        grid.logStep = 14; // total iterations = 3
-//    }
-//    else if( param_id == SVM::DEGREE )
-//    {
-//        grid.minVal = 0.01;
-//        grid.maxVal = 4;
-//        grid.logStep = 7; // total iterations = 3
-//    }
-
     ParamGrid C_grid = ParamGrid(.001, 1000, 5);
     ParamGrid p_grid = ParamGrid(.001, 500, 7);
     ParamGrid gamma_grid = ParamGrid(1e-5, .6, 15);
@@ -118,7 +85,7 @@ void TrainerSvm::run() {
         svm->setCoef0(coef0);
 
         // Cross-validation
-        float acc = 0;
+        AveragedStats avg_stats;
         try {
             TRAINERSVM_LOG << "- Cross validating..." << endl;
             for (int fold = 0; fold != folds_; fold++) {
@@ -146,34 +113,44 @@ void TrainerSvm::run() {
                 hog_.setSVMDetector(detector);
 
                 // Test the actual setting using the test set
-                TRAINERSVM_LOG << " * Fold #" << fold+1 << ": testing..." << endl;
-                Stats stat(hog_, test_pos, test_neg);
-                stat.test();
+                TRAINERHOG_LOG << " * Fold #" << fold+1 << ": testing..." << endl;
+                PerformanceTest tester(hog_, test_pos, test_neg);
+                tester.test();
 
                 // Save the accuracy
-                acc += stat.getAccuracy();
-
-                TRAINERSVM_LOG << " + Fold #" << fold+1 << " accuracy: " << stat.getAccuracy() << endl;
+                avg_stats.insert(tester.getStats());
             }
         } catch (cv::Exception &e) {
             continue;
         }
 
-        // Average accuracy (based on the number of folds)
-        acc = acc / folds_;
-        TRAINERSVM_LOG << "- Final accuracy: " << acc << endl << endl;
+        TRAINERHOG_LOG << "Average results: " << endl;
+        cout << avg_stats;
 
         // If the average accuracy is better than the last parameter set, then save it
-        if (acc > bestsvm_.acc) {
-            bestsvm_.svm = svm;
-            bestsvm_.acc = acc;
+        if (avg_stats.getFScore() > best_.stat.getFScore()) {
+            best_.svm = svm;
+            best_.stat = avg_stats;
 
             TRAINERSVM_LOG << "New best SVM!" << endl;
-            TRAINERSVM_LOG << bestsvm_;
+            cout << best_;
         }
     }
 }
 
-Ptr<SVM> TrainerSvm::getBest() {
-    return bestsvm_.svm;
+void TrainerSvm::saveReport(const string &output_path) {
+    // Open a file for the report
+    ofstream report;
+    report.open(output_path);
+    if(!report.is_open()) {
+        exit(-1);
+    }
+
+    // Save the report
+    report << best_;
+    report.close();
+}
+
+BestSvm TrainerSvm::getBest() {
+    return best_;
 }
