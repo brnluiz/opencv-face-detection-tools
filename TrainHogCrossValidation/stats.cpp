@@ -15,6 +15,12 @@ float Stats::getRecall() {
             (float)(positives + false_negatives);
 }
 
+float Stats::getFScore() {
+    float precision = getPrecision();
+    float recall = getRecall();
+    return 2*(precision * recall)/(precision + recall);
+}
+
 void Stats::print() {
     STAT_LOG << "Accuracy info: " << endl;
     STAT_LOG << "Positives: " << positives << endl;

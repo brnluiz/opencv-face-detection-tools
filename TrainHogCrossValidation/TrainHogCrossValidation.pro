@@ -34,7 +34,8 @@ SOURCES += \
     trainer_svm.cpp \
     trainer_abstract.cpp \
     performance_test.cpp \
-    stats.cpp
+    stats.cpp \
+    averaged_stats.cpp
 
 HEADERS += \
     dataset.h \
@@ -47,4 +48,5 @@ HEADERS += \
     trainer_hog.h \
     trainer_abstract.h \
     performance_test.h \
-    stats.h
+    stats.h \
+    averaged_stats.h

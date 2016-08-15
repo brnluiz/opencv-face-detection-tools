@@ -14,6 +14,7 @@ public:
     float getAccuracy();
     float getRecall();
     float getPrecision();
+    float getFScore();
 
     // Printing methods
     void print();
