@@ -24,7 +24,6 @@ public:
     float getFScore();
 
     // Printing methods
-    void print();
     friend std::ostream& operator<<(std::ostream& os, Stats& stat) {
         os << "Positives, " << stat.positives << endl
            << "Negatives, " << stat.negatives << endl

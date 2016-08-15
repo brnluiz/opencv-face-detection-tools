@@ -7,7 +7,7 @@ AveragedStats::AveragedStats(): items_(vector<Stats>()) {
 float AveragedStats::getAccuracy() {
     float output = 0;
 
-    vector<Stats>::const_iterator it;
+    vector<Stats>::iterator it;
     for(it = items_.begin(); it < items_.end(); it++) {
         output += (*it).getAccuracy();
     }
@@ -18,7 +18,7 @@ float AveragedStats::getAccuracy() {
 float AveragedStats::getPrecision() {
     float output = 0;
 
-    vector<Stats>::const_iterator it;
+    vector<Stats>::iterator it;
     for(it = items_.begin(); it < items_.end(); it++) {
         output += (*it).getPrecision();
     }
@@ -29,7 +29,7 @@ float AveragedStats::getPrecision() {
 float AveragedStats::getRecall() {
     float output = 0;
 
-    vector<Stats>::const_iterator it;
+    vector<Stats>::iterator it;
     for(it = items_.begin(); it < items_.end(); it++) {
         output += (*it).getRecall();
     }
@@ -40,7 +40,7 @@ float AveragedStats::getRecall() {
 float AveragedStats::getFScore() {
     float output = 0;
 
-    vector<Stats>::const_iterator it;
+    vector<Stats>::iterator it;
     for(it = items_.begin(); it < items_.end(); it++) {
         output += (*it).getFScore();
     }
